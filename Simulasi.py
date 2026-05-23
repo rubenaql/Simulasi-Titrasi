@@ -10,7 +10,7 @@ import streamlit as st
 
 
 st.set_page_config(
-    page_title="Advanced Titration Simulator",
+    page_title="Simulasi Titrasi Dan Kadar pH",
     layout="wide",
     page_icon="🧪",
 )
@@ -422,4 +422,4 @@ if st.button("Start Auto Simulation"):
 
 st.divider()
 
-st.caption("Educational simulator built using Streamlit, Plotly, NumPy, and Pandas.")
+st.caption("Credits To Kelompok 2,Streamlit, Plotly, NumPy, and Pandas.")
