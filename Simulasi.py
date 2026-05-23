@@ -153,20 +153,19 @@ def compute_ph(params):
 # UI
 # =========================
 
-st.title("🧪 Advanced Titration Simulator")
+st.title("🧪 Simulasi Titrasi Dan Grafik Kadar pH")
 
 st.markdown(
     """
-Interactive chemistry simulator using Streamlit.
+Alat Bantu Titrasi Interaktif.
 
 Features:
-- Strong acid vs strong base
-- Weak acid vs strong base
-- Auto titration
-- pH curve plotting
-- Indicator color simulation
-- CSV export
-- Modern UI
+- Asam Kuat vs Basa Kuat
+- Asam Lemah vs Basa Kuat
+- Auto Titrasi
+- Kurva pH
+- Simulasi Warna Indikator
+- Data CSV Export
 """
 )
 
