@@ -12,7 +12,7 @@ import streamlit as st
 st.set_page_config(
     page_title="Simulator Titrasi",
     layout="wide",
-    page_icon="🧪",
+    page_icon="😜",
     initial_sidebar_state="expanded",
 )
 
@@ -188,7 +188,7 @@ def hitung_ph(params: Parameter):
 # UI
 # =========================
 
-st.title("🧪 Simulator Titrasi ")
+st.title("😜 Simulator Titrasi ")
 
 st.markdown(
     """
