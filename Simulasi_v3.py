@@ -188,7 +188,7 @@ def hitung_ph(params: Parameter):
 # UI
 # =========================
 
-st.title("😜 Simulator Titrasi ")
+st.title(" Simulator Titrasi ")
 
 st.markdown(
     """
