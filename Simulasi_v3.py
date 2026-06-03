@@ -537,4 +537,4 @@ st.table(ringkasan)
 
 
 
-st.caption("Simulasi edukasi menggunakan Streamlit, Plotly, NumPy, dan Pandas.")
+st.caption("Courtesy Of Kelompok 3 LPK")
