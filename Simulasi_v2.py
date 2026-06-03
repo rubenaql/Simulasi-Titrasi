@@ -534,10 +534,6 @@ if st.button("Mulai Simulasi Otomatis"):
 
 st.divider()
 
-st.caption("Courtesy Of Kelompok 3 LPK.")
-
-
-
 st.subheader("📋 Ringkasan")
 
 ringkasan = pd.DataFrame(
@@ -553,3 +549,6 @@ ringkasan = pd.DataFrame(
 )
 
 st.table(ringkasan)
+
+
+st.caption("Courtesy Of Kelompok 3 LPK")
