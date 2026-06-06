@@ -399,8 +399,7 @@ with left:
         <div style="
             width:220px;
             height:320px;
-            border:4px solid #aaaaaa;
-            border-radius:20px;
+            border: none;
             background:{solution_color};
             margin:auto;
         "></div>
