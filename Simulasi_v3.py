@@ -11,7 +11,7 @@ import streamlit as st
 st.set_page_config(
     page_title="Simulator Titrasi",
     layout="wide",
-    page_icon="😜",
+    page_icon="",
     initial_sidebar_state="expanded",
 )
 
@@ -31,7 +31,6 @@ def hitung_asam_kuat_basa_kuat(type_, c0, v0, c_add, v_add_ml, Kw):
     v_add = v_add_ml / 1000
     Vt = v0 + v_add
 
-    # --- Cegah ZeroDivisionError ---
     if Vt <= 0:
         return 7.0, "Volume total nol (periksa volume awal)"
 
@@ -44,14 +43,10 @@ def hitung_asam_kuat_basa_kuat(type_, c0, v0, c_add, v_add_ml, Kw):
 
         if abs(sisa_basa) < eps_mol:
             status = "Titik ekuivalen"
-            # Pada titik ekuivalen, pH ditentukan oleh autoionisasi air
             H = math.sqrt(Kw)
         elif sisa_basa > 0:
             status = "Kelebihan basa"
             C_b = sisa_basa / Vt
-            # Persamaan kuadrat untuk basa kuat dengan autoionisasi
-            # [OH-] = C_b + [H+], dan [H+][OH-]=Kw
-            # -> [H+]^2 + C_b[H+] - Kw = 0
             a = 1.0
             b = C_b
             c = -Kw
@@ -60,7 +55,6 @@ def hitung_asam_kuat_basa_kuat(type_, c0, v0, c_add, v_add_ml, Kw):
         else:
             status = "Kelebihan asam"
             C_a = (-sisa_basa) / Vt
-            # Persamaan kuadrat untuk asam kuat dengan autoionisasi
             a = 1.0
             b = C_a
             c = -Kw
@@ -105,13 +99,10 @@ def hitung_asam_lemah(c0, v0, c_add, v_add_ml, pKa, Kw):
     nOH = c_add * v_add
     eps = 1e-12
 
-    # Kasus 1: belum ada basa atau sebelum ekuivalen
     if nOH < nHA - eps:
         sisa_HA = nHA - nOH
         terbentuk_A = nOH
         if terbentuk_A <= 0:
-            # Hanya asam lemah, selesaikan persamaan kuadrat
-            # [H+]^2 + Ka[H+] - Ka*Ca = 0
             Ca = nHA / Vt
             a = 1.0
             b = Ka
@@ -120,27 +111,21 @@ def hitung_asam_lemah(c0, v0, c_add, v_add_ml, pKa, Kw):
             H = max(H, 1e-14)
             status = "Asam lemah (belum dititrasi)"
         else:
-            # Daerah buffer, gunakan Henderson-Hasselbalch
             pH = pKa + math.log10(terbentuk_A / sisa_HA)
             status = "Daerah buffer"
             return pH, status
         return pH_dari_H(H), status
 
-    # Kasus 2: titik ekuivalen
     if abs(nOH - nHA) < eps:
         C_garam = nHA / Vt
         Kb = Kw / Ka
-        # Hidrolisis garam: [OH-] = sqrt(Kb * C_garam)
         OH = math.sqrt(Kb * C_garam)
         H = Kw / OH
         status = "Titik ekuivalen"
         return pH_dari_H(H), status
 
-    # Kasus 3: kelebihan basa
     kelebihan = nOH - nHA
     C_b = kelebihan / Vt
-    # Basa kuat + garam (garam tidak berpengaruh pada pH karena basa kuat dominan)
-    # Tapi tetap perhitungkan autoionisasi air
     a = 1.0
     b = C_b
     c = -Kw
@@ -181,7 +166,7 @@ def hitung_ph(params: Parameter):
             params.v_add_ml,
             Kw,
         )
-    else:  # CH3COOH_NaOH
+    else:
         pH, status = hitung_asam_lemah(
             params.c0,
             params.v0,
@@ -191,7 +176,6 @@ def hitung_ph(params: Parameter):
             Kw,
         )
 
-    # Batasi pH antara 0 dan 14
     pH = max(0.0, min(14.0, pH))
     return pH, status, Kw
 
@@ -199,66 +183,154 @@ def hitung_ph(params: Parameter):
 # UI
 # =========================
 
-st.title(" Simulator Titrasi ")
+st.title("Simulator Titrasi Interaktif")
 
 st.markdown(
     """
-Simulasi kimia interaktif menggunakan Streamlit.
-
-Fitur:
-- Asam kuat vs basa kuat
-- Asam lemah vs basa kuat
-- Titrasi otomatis
-- Pembuatan kurva pH
-- Simulasi warna indikator
-- Ekspor CSV
+Simulasi kimia interaktif menggunakan Streamlit.  
+Fitur: Asam kuat vs basa kuat | Asam lemah vs basa kuat | Kurva pH | Simulasi warna indikator | Ekspor CSV
 """
 )
 
 # =========================
-# BILAH SAMPING
+# BILAH SAMPING (DIPERBAIKI & STANDAR, TANPA EMOJI)
 # =========================
 
 with st.sidebar:
-    st.header("⚙️ Pengaturan")
-
+    st.header("Pengaturan Titrasi")
+    
+    st.subheader("Jenis Titrasi")
     type_ = st.selectbox(
-        "Jenis Titrasi",
-        [
+        "Pilih reaksi:",
+        options=[
             "HCl_NaOH",
             "NaOH_HCl",
             "CH3COOH_NaOH",
         ],
         format_func=lambda x: {
-            "HCl_NaOH": "HCl + NaOH",
-            "NaOH_HCl": "NaOH + HCl",
-            "CH3COOH_NaOH": "CH3COOH + NaOH",
+            "HCl_NaOH": "Asam Kuat (HCl) + Basa Kuat (NaOH)",
+            "NaOH_HCl": "Basa Kuat (NaOH) + Asam Kuat (HCl)",
+            "CH3COOH_NaOH": "Asam Lemah (CH3COOH) + Basa Kuat (NaOH)",
         }.get(x, x),
+        help="Pilih pasangan analit dan titran"
     )
-
-    temp_c = st.slider("Suhu (°C)", 20.0, 30.0, 25.0)
-
-    # --- Batasi nilai konsentrasi dan volume agar tidak negatif ---
-    c0 = st.number_input("Konsentrasi Awal (M)", min_value=0.0, value=0.1, step=0.01, format="%.4f")
-    v0 = st.number_input("Volume Awal (L)", min_value=0.001, value=0.05, step=0.01, format="%.4f")
-
-    c_add = st.number_input("Konsentrasi Titran (M)", min_value=0.0, value=0.1, step=0.01, format="%.4f")
-
-    v_max = st.slider("Volume Maksimum (mL)", 10, 100, 50)
-    v_add_ml = st.slider("Volume Saat Ini (mL)", 0, int(v_max), 0)
-
-    pKa = 4.76
+    
+    st.markdown("---")
+    
+    st.subheader("Larutan Analit")
+    col1, col2 = st.columns(2)
+    with col1:
+        c0 = st.number_input(
+            "Konsentrasi (M)", 
+            min_value=0.0, 
+            value=0.1, 
+            step=0.01, 
+            format="%.4f",
+            help="Konsentrasi larutan yang akan dititrasi"
+        )
+    with col2:
+        v0 = st.number_input(
+            "Volume (L)", 
+            min_value=0.001, 
+            value=0.05, 
+            step=0.01, 
+            format="%.4f",
+            help="Volume larutan analit (minimal 0.001 L)"
+        )
+    
+    st.subheader("Larutan Titran")
+    col3, col4 = st.columns(2)
+    with col3:
+        c_add = st.number_input(
+            "Konsentrasi (M)", 
+            min_value=0.0, 
+            value=0.1, 
+            step=0.01, 
+            format="%.4f",
+            help="Konsentrasi larutan peniter"
+        )
+    with col4:
+        v_max = st.slider(
+            "Volume Maksimum (mL)", 
+            min_value=10, 
+            max_value=100, 
+            value=50,
+            help="Batas atas volume titran yang disimulasikan"
+        )
+    
+    st.subheader("Parameter Tambahan")
+    col5, col6 = st.columns(2)
+    with col5:
+        temp_c = st.slider(
+            "Suhu (C)", 
+            min_value=20.0, 
+            max_value=30.0, 
+            value=25.0,
+            step=0.5,
+            help="Mempengaruhi konstanta ionisasi air (Kw)"
+        )
+    with col6:
+        v_add_ml = st.slider(
+            "Volume Ditambahkan (mL)", 
+            min_value=0, 
+            max_value=int(v_max), 
+            value=0,
+            step=1,
+            help="Volume titran yang sudah ditambahkan (simulasi interaktif)"
+        )
+    
     if type_ == "CH3COOH_NaOH":
-        pKa = st.number_input("pKa", min_value=0.0, value=4.76, step=0.1, format="%.2f")
-
+        pKa = st.number_input(
+            "pKa Asam Lemah", 
+            min_value=0.0, 
+            value=4.76, 
+            step=0.1, 
+            format="%.2f",
+            help="Nilai pKa asam asetat adalah 4,76 pada 25C"
+        )
+    else:
+        pKa = 4.76
+    
+    st.markdown("---")
+    
+    st.subheader("Indikator pH")
     indicator = st.selectbox(
-        "Indikator",
-        [
+        "Pilih indikator untuk simulasi warna:",
+        options=[
             "Phenolphthalein",
             "Methyl Orange",
             "Bromothymol Blue",
         ],
+        format_func=lambda x: {
+            "Phenolphthalein": "Phenolphthalein (trayek pH 8.2-10)",
+            "Methyl Orange": "Methyl Orange (trayek pH 3.1-4.4)",
+            "Bromothymol Blue": "Bromothymol Blue (trayek pH 6.0-7.6)",
+        }.get(x, x),
+        help="Warna larutan akan berubah sesuai pH dan indikator yang dipilih"
     )
+    
+    st.markdown("---")
+    
+    st.subheader("Informasi Cepat")
+    if c_add > 0:
+        ve_calc = (c0 * v0 / c_add) * 1000
+        st.metric("Volume Ekuivalen (teoritis)", f"{ve_calc:.2f} mL")
+    else:
+        st.warning("Konsentrasi titran nol, tidak dapat menghitung volume ekuivalen.")
+    
+    if type_ == "HCl_NaOH":
+        rec_ind = "Bromothymol Blue atau Phenolphthalein"
+    elif type_ == "CH3COOH_NaOH":
+        rec_ind = "Phenolphthalein"
+    else:
+        rec_ind = "Methyl Orange"
+    st.info(f"Indikator yang disarankan: {rec_ind}")
+    
+    st.caption("Geser slider dan amati perubahan pH serta warna larutan.")
+
+# =========================
+# PARAMETER OBJEK
+# =========================
 
 params = Parameter(
     type_=type_,
@@ -272,29 +344,17 @@ params = Parameter(
 )
 
 # =========================
-# HITUNG
+# HITUNG pH SAAT INI
 # =========================
 
 pH, status, Kw = hitung_ph(params)
-
-# =========================
-# VOLUME EKUIVALEN
-# =========================
 Ve = (c0 * v0 / c_add) * 1000 if c_add > 0 else 0
 
-if type_ == "HCl_NaOH":
-    indikator_rekomendasi = "Bromothymol Blue / Phenolphthalein"
-elif type_ == "CH3COOH_NaOH":
-    indikator_rekomendasi = "Phenolphthalein"
-else:
-    indikator_rekomendasi = "Methyl Orange"
-
 # =========================
-# WARNA INDIKATOR (DIPERBAIKI)
+# WARNA INDIKATOR
 # =========================
-# Gunakan border pada kotak agar indikator putih tetap terlihat
 if indicator == "Phenolphthalein":
-    solution_color = "#f0f0f0" if pH < 8.2 else "#ff69b4"  # abu-abu terang, bukan putih murni
+    solution_color = "#f0f0f0" if pH < 8.2 else "#ff69b4"
 elif indicator == "Methyl Orange":
     if pH < 3.1:
         solution_color = "#ff0000"
@@ -311,15 +371,13 @@ elif indicator == "Bromothymol Blue":
         solution_color = "#00ff00"
 
 # =========================
-# TATA LETAK
+# TATA LETAK KOLOM UTAMA
 # =========================
 
 left, right = st.columns([1, 2])
 
 with left:
-    st.subheader("🧪 Larutan")
-
-    # Tampilkan kotak warna dengan border abu-abu agar terlihat
+    st.subheader("Larutan")
     st.markdown(
         f"""
         <div style="
@@ -333,32 +391,19 @@ with left:
         """,
         unsafe_allow_html=True,
     )
-
     st.metric("pH", f"{pH:.2f}")
     st.metric("Status", status)
     st.metric("Volume Ekuivalen", f"{Ve:.2f} mL")
     st.metric("Volume Ditambahkan", f"{v_add_ml:.1f} mL")
-    st.metric("Suhu", f"{temp_c:.1f} °C")
-
-    st.markdown(
-        f"""
-        <div style="background:#111;color:#00ff00;font-size:30px;
-        text-align:center;padding:10px;border-radius:10px;">
-        pH {pH:.2f}
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    st.write(f"Kw ≈ {Kw:.2e}")
+    st.metric("Suhu", f"{temp_c:.1f} C")
+    st.write(f"Kw = {Kw:.2e}")
 
 # =========================
-# KURVA
+# KURVA TITRASI
 # =========================
 
 vs = np.linspace(0, v_max, 250)
 phs = []
-
 for v in vs:
     tmp_params = Parameter(
         type_=type_,
@@ -374,33 +419,12 @@ for v in vs:
     phs.append(curve_ph)
 
 fig = go.Figure()
+fig.add_trace(go.Scatter(x=vs, y=phs, mode="lines", line=dict(width=4, color="#00ff99"), name="Kurva pH"))
 
-fig.add_trace(
-    go.Scatter(
-        x=vs,
-        y=phs,
-        mode="lines",
-        line=dict(width=4, color="#00ff99"),
-        name="Kurva pH",
-    )
-)
+if c_add > 0 and 0 <= Ve <= v_max:
+    fig.add_vline(x=Ve, line_dash="dash", annotation_text="Titik Ekuivalen")
 
-if 0 <= Ve <= v_max:
-    fig.add_vline(
-        x=Ve,
-        line_dash="dash",
-        annotation_text="Titik Ekuivalen"
-    )
-
-fig.add_trace(
-    go.Scatter(
-        x=[v_add_ml],
-        y=[pH],
-        mode="markers",
-        marker=dict(size=12, color="#4aa3ff"),
-        name="Titik Saat Ini",
-    )
-)
+fig.add_trace(go.Scatter(x=[v_add_ml], y=[pH], mode="markers", marker=dict(size=12, color="#4aa3ff"), name="Titik Saat Ini"))
 
 fig.update_layout(
     template="plotly",
@@ -411,32 +435,26 @@ fig.update_layout(
 )
 
 with right:
-    st.subheader("📈 Kurva Titrasi")
+    st.subheader("Kurva Titrasi")
     st.plotly_chart(fig, use_container_width=True)
 
 # =========================
-# REAKSI
+# REAKSI DAN PERHITUNGAN
 # =========================
 
-st.subheader("⚗️ Reaksi Kimia")
-
-if type_ == "HCl_NaOH":
+st.subheader("Reaksi Kimia")
+if type_ == "HCl_NaOH" or type_ == "NaOH_HCl":
     st.latex(r"HCl + NaOH \rightarrow NaCl + H_2O")
-elif type_ == "NaOH_HCl":
-    st.latex(r"NaOH + HCl \rightarrow NaCl + H_2O")
 else:
     st.latex(r"CH_3COOH + NaOH \rightarrow CH_3COONa + H_2O")
     st.latex(r"pH = pK_a + \log\frac{[A^-]}{[HA]}")
 
-st.subheader("🧮 Perhitungan")
-
+st.subheader("Perhitungan")
 with st.expander("Lihat Langkah Perhitungan"):
     mol_awal = c0 * v0
     mol_titran = c_add * (v_add_ml / 1000)
-
     st.write(f"Mol analit awal = {mol_awal:.5f} mol")
     st.write(f"Mol titran = {mol_titran:.5f} mol")
-
     if mol_awal > mol_titran + 1e-12:
         st.write(f"Sisa analit = {(mol_awal-mol_titran):.5f} mol")
     elif mol_titran > mol_awal + 1e-12:
@@ -444,38 +462,25 @@ with st.expander("Lihat Langkah Perhitungan"):
     else:
         st.success("Titik ekuivalen")
 
-st.sidebar.success(f"Indikator Disarankan: {indikator_rekomendasi}")
-
 # =========================
 # EKSPOR DATA
 # =========================
 
-st.subheader("📥 Ekspor Data")
-
+st.subheader("Ekspor Data")
 export_df = pd.DataFrame({"Volume_mL": vs, "pH": phs})
-with st.expander("📊 Tabel Data Kurva"):
+with st.expander("Tabel Data Kurva"):
     st.dataframe(export_df.round(3), use_container_width=True)
-
 csv = export_df.to_csv(index=False)
-
-st.download_button(
-    label="Unduh CSV",
-    data=csv,
-    file_name="titration_curve.csv",
-    mime="text/csv",
-)
+st.download_button(label="Unduh CSV", data=csv, file_name="titration_curve.csv", mime="text/csv")
 
 # =========================
-# TITRASI OTOMATIS (DIPERBAIKI SEDIKIT)
+# TITRASI OTOMATIS
 # =========================
 
-st.subheader("▶️ Titrasi Otomatis")
-
+st.subheader("Titrasi Otomatis")
 if st.button("Mulai Simulasi Otomatis"):
     progress = st.progress(0)
     chart_placeholder = st.empty()
-
-    # Buat figure dasar sekali saja untuk efisiensi
     base_fig = go.Figure()
     base_fig.add_trace(go.Scatter(x=vs, y=phs, mode="lines", name="Kurva pH"))
     base_fig.update_layout(
@@ -485,7 +490,6 @@ if st.button("Mulai Simulasi Otomatis"):
         xaxis_title="Volume Ditambahkan (mL)",
         yaxis_title="pH"
     )
-
     for i, vol in enumerate(np.linspace(0, v_max, 40)):
         tmp_params = Parameter(
             type_=type_,
@@ -498,42 +502,25 @@ if st.button("Mulai Simulasi Otomatis"):
             pKa=pKa,
         )
         temp_ph, _, _ = hitung_ph(tmp_params)
-
-        # Salin figure agar tidak merusak yang asli
         temp_fig = go.Figure(base_fig)
         temp_fig.add_trace(
-            go.Scatter(
-                x=[vol],
-                y=[temp_ph],
-                mode="markers",
-                marker=dict(size=12, color="red"),
-                name="Titik saat ini"
-            )
+            go.Scatter(x=[vol], y=[temp_ph], mode="markers", marker=dict(size=12, color="red"), name="Titik saat ini")
         )
         chart_placeholder.plotly_chart(temp_fig, use_container_width=True)
         progress.progress((i + 1) / 40)
-        time.sleep(0.05)  # dikurangi sedikit agar lebih responsif
+        time.sleep(0.05)
 
 # =========================
-# CATATAN AKHIR
+# RINGKASAN & FOOTER
 # =========================
 
 st.divider()
-
-st.subheader("📋 Ringkasan")
-
+st.subheader("Ringkasan")
 ringkasan = pd.DataFrame(
     {
         "Parameter": ["pH", "Status", "Volume Ekuivalen", "Indikator"],
-        "Nilai": [
-            round(pH, 2),
-            status,
-            f"{Ve:.2f} mL",
-            indikator_rekomendasi,
-        ],
+        "Nilai": [round(pH, 2), status, f"{Ve:.2f} mL", rec_ind],
     }
 )
-
 st.table(ringkasan)
-
 st.caption("Courtesy Of Kelompok 3 LPK")
