@@ -1,3 +1,8 @@
+Tentu! Berikut adalah kode lengkap Simulator Titrasi Lanjutan dengan perbaikan CSS agar *border* (garis luar) pada kotak input benar-benar hilang, termasuk saat sedang diklik atau fokus.
+
+Kamu bisa langsung menyalin seluruh kode ini dan menyimpannya ke dalam file Python (misalnya `titrasi.py`), lalu jalankan dengan perintah `streamlit run titrasi.py`.
+
+```python
 # Simulator Titrasi Lanjutan berbasis Streamlit
 import math
 import time
@@ -21,7 +26,23 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    /* Hilangkan border pada semua input number */
+    /* Hilangkan border dan background pada container utama Base Web input */
+    div[data-testid="stNumberInput"] div[data-baseweb="input"],
+    div[data-testid="stNumberInput"] div[data-baseweb="input"] > div {
+        border: none !important;
+        border-color: transparent !important;
+        box-shadow: none !important;
+        background-color: transparent !important;
+    }
+    
+    /* Hilangkan ring/border saat input sedang fokus (diklik) */
+    div[data-testid="stNumberInput"] div[data-baseweb="input"]:focus-within,
+    div[data-testid="stNumberInput"] div[data-baseweb="input"] > div:focus-within {
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    /* Hilangkan border pada text input itu sendiri */
     div[data-testid="stNumberInput"] input {
         border: none !important;
         box-shadow: none !important;
@@ -31,6 +52,7 @@ st.markdown(
         width: auto !important;
         min-width: 80px !important;
     }
+    
     /* Opsional: sesuaikan container agar tidak melebar */
     div[data-testid="stNumberInput"] {
         width: auto !important;
@@ -539,3 +561,5 @@ ringkasan = pd.DataFrame(
 )
 st.table(ringkasan)
 st.caption("Courtesy Of Kelompok 3 LPK")
+
+```
