@@ -1,9 +1,3 @@
-Tentu! Berikut adalah kode lengkap Simulator Titrasi Lanjutan dengan perbaikan CSS agar *border* (garis luar) pada kotak input benar-benar hilang, termasuk saat sedang diklik atau fokus.
-
-Kamu bisa langsung menyalin seluruh kode ini dan menyimpannya ke dalam file Python (misalnya `titrasi.py`), lalu jalankan dengan perintah `streamlit run titrasi.py`.
-
-```python
-# Simulator Titrasi Lanjutan berbasis Streamlit
 import math
 import time
 from dataclasses import dataclass
