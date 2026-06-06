@@ -193,7 +193,7 @@ Fitur: Asam kuat vs basa kuat | Asam lemah vs basa kuat | Kurva pH | Simulasi wa
 )
 
 # =========================
-# BILAH SAMPING (DIPERBAIKI, TANPA EMOJI, VOLUME DITAMBAHKAN DI BAWAH)
+# BILAH SAMPING (TATA LETAK BARU)
 # =========================
 
 with st.sidebar:
@@ -218,48 +218,46 @@ with st.sidebar:
     st.markdown("---")
     
     st.subheader("Larutan Analit")
-    col1, col2 = st.columns(2)
-    with col1:
-        c0 = st.number_input(
-            "Konsentrasi (M)", 
-            min_value=0.0, 
-            value=0.1, 
-            step=0.01, 
-            format="%.4f",
-            help="Konsentrasi larutan yang akan dititrasi"
-        )
-    with col2:
-        v0 = st.number_input(
-            "Volume (L)", 
-            min_value=0.001, 
-            value=0.05, 
-            step=0.01, 
-            format="%.4f",
-            help="Volume larutan analit (minimal 0.001 L)"
-        )
+    # Konsentrasi analit
+    c0 = st.number_input(
+        "Konsentrasi (M)", 
+        min_value=0.0, 
+        value=0.1, 
+        step=0.01, 
+        format="%.4f",
+        help="Konsentrasi larutan yang akan dititrasi"
+    )
+    # Volume analit diletakkan di bawah
+    v0 = st.number_input(
+        "Volume (L)", 
+        min_value=0.001, 
+        value=0.05, 
+        step=0.01, 
+        format="%.4f",
+        help="Volume larutan analit (minimal 0.001 L)"
+    )
     
     st.subheader("Larutan Titran")
-    col3, col4 = st.columns(2)
-    with col3:
-        c_add = st.number_input(
-            "Konsentrasi (M)", 
-            min_value=0.0, 
-            value=0.1, 
-            step=0.01, 
-            format="%.4f",
-            help="Konsentrasi larutan peniter"
-        )
-    with col4:
-        v_max = st.slider(
-            "Volume Maksimum (mL)", 
-            min_value=10, 
-            max_value=100, 
-            value=50,
-            help="Batas atas volume titran yang disimulasikan"
-        )
+    # Konsentrasi titran
+    c_add = st.number_input(
+        "Konsentrasi (M)", 
+        min_value=0.0, 
+        value=0.1, 
+        step=0.01, 
+        format="%.4f",
+        help="Konsentrasi larutan peniter"
+    )
+    # Volume maksimum diletakkan di bawah
+    v_max = st.slider(
+        "Volume Maksimum (mL)", 
+        min_value=10, 
+        max_value=100, 
+        value=50,
+        help="Batas atas volume titran yang disimulasikan"
+    )
     
     st.subheader("Parameter Tambahan")
-    # Suhu slider
+    # Suhu
     temp_c = st.slider(
         "Suhu (C)", 
         min_value=20.0, 
@@ -268,7 +266,7 @@ with st.sidebar:
         step=0.5,
         help="Mempengaruhi konstanta ionisasi air (Kw)"
     )
-    # Volume Ditambahkan diletakkan di bawah (tidak sebelahan)
+    # Volume Ditambahkan di bawah suhu
     v_add_ml = st.slider(
         "Volume Ditambahkan (mL)", 
         min_value=0, 
