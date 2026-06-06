@@ -19,40 +19,21 @@
     # CSS untuk menghapus border pada number input
     # =========================
     st.markdown(
-    """
-    <style>
-    /* Hilangkan border dan background pada container utama Base Web input */
-    div[data-testid="stNumberInput"] div[data-baseweb="input"],
-    div[data-testid="stNumberInput"] div[data-baseweb="input"] > div {
-        border: none !important;
-        border-color: transparent !important;
-        box-shadow: none !important;
-        background-color: transparent !important;
-    }
-    
-    /* Hilangkan ring/border saat input sedang fokus (diklik) */
-    div[data-testid="stNumberInput"] div[data-baseweb="input"]:focus-within,
-    div[data-testid="stNumberInput"] div[data-baseweb="input"] > div:focus-within {
-        box-shadow: none !important;
-        border: none !important;
-    }
-
-    /* Hilangkan border pada text input itu sendiri */
-    div[data-testid="stNumberInput"] input {
-        border: none !important;
-        box-shadow: none !important;
-        outline: none !important;
-        background: transparent !important;
-        padding: 0.25rem 0.5rem !important;
-    }
-    
-    /* Opsional: sesuaikan container agar tidak melebar */
-    div[data-testid="stNumberInput"] {
-        width: auto !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
+        """
+        <style>
+        div[data-testid="stNumberInput"] input {
+            background: transparent;
+            padding: 0.25rem 0.5rem;
+            width: auto;
+            min-width: 80px;
+        }
+        /* Opsional: sesuaikan container agar tidak melebar */
+        div[data-testid="stNumberInput"] {
+            width: auto;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
     )
 
     # =========================
