@@ -193,7 +193,7 @@ Fitur: Asam kuat vs basa kuat | Asam lemah vs basa kuat | Kurva pH | Simulasi wa
 )
 
 # =========================
-# BILAH SAMPING (DIPERBAIKI & STANDAR, TANPA EMOJI)
+# BILAH SAMPING (DIPERBAIKI, TANPA EMOJI, VOLUME DITAMBAHKAN DI BAWAH)
 # =========================
 
 with st.sidebar:
@@ -259,25 +259,24 @@ with st.sidebar:
         )
     
     st.subheader("Parameter Tambahan")
-    col5, col6 = st.columns(2)
-    with col5:
-        temp_c = st.slider(
-            "Suhu (C)", 
-            min_value=20.0, 
-            max_value=30.0, 
-            value=25.0,
-            step=0.5,
-            help="Mempengaruhi konstanta ionisasi air (Kw)"
-        )
-    with col6:
-        v_add_ml = st.slider(
-            "Volume Ditambahkan (mL)", 
-            min_value=0, 
-            max_value=int(v_max), 
-            value=0,
-            step=1,
-            help="Volume titran yang sudah ditambahkan (simulasi interaktif)"
-        )
+    # Suhu slider
+    temp_c = st.slider(
+        "Suhu (C)", 
+        min_value=20.0, 
+        max_value=30.0, 
+        value=25.0,
+        step=0.5,
+        help="Mempengaruhi konstanta ionisasi air (Kw)"
+    )
+    # Volume Ditambahkan diletakkan di bawah (tidak sebelahan)
+    v_add_ml = st.slider(
+        "Volume Ditambahkan (mL)", 
+        min_value=0, 
+        max_value=int(v_max), 
+        value=0,
+        step=1,
+        help="Volume titran yang sudah ditambahkan (simulasi interaktif)"
+    )
     
     if type_ == "CH3COOH_NaOH":
         pKa = st.number_input(
