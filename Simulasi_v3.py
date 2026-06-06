@@ -16,6 +16,31 @@ st.set_page_config(
 )
 
 # =========================
+# CSS untuk menghapus border pada number input
+# =========================
+st.markdown(
+    """
+    <style>
+    /* Hilangkan border pada semua input number */
+    div[data-testid="stNumberInput"] input {
+        border: none !important;
+        box-shadow: none !important;
+        outline: none !important;
+        background: transparent !important;
+        padding: 0.25rem 0.5rem !important;
+        width: auto !important;
+        min-width: 80px !important;
+    }
+    /* Opsional: sesuaikan container agar tidak melebar */
+    div[data-testid="stNumberInput"] {
+        width: auto !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# =========================
 # FUNGSI KIMIA (DIPERBAIKI)
 # =========================
 
@@ -218,7 +243,6 @@ with st.sidebar:
     st.markdown("---")
     
     st.subheader("Larutan Analit")
-    # Konsentrasi analit
     c0 = st.number_input(
         "Konsentrasi (M)", 
         min_value=0.0, 
@@ -227,7 +251,6 @@ with st.sidebar:
         format="%.4f",
         help="Konsentrasi larutan yang akan dititrasi"
     )
-    # Volume analit diletakkan di bawah
     v0 = st.number_input(
         "Volume (L)", 
         min_value=0.001, 
@@ -238,7 +261,6 @@ with st.sidebar:
     )
     
     st.subheader("Larutan Titran")
-    # Konsentrasi titran
     c_add = st.number_input(
         "Konsentrasi (M)", 
         min_value=0.0, 
@@ -247,7 +269,6 @@ with st.sidebar:
         format="%.4f",
         help="Konsentrasi larutan peniter"
     )
-    # Volume maksimum diletakkan di bawah
     v_max = st.slider(
         "Volume Maksimum (mL)", 
         min_value=10, 
@@ -257,7 +278,6 @@ with st.sidebar:
     )
     
     st.subheader("Parameter Tambahan")
-    # Suhu
     temp_c = st.slider(
         "Suhu (C)", 
         min_value=20.0, 
@@ -266,7 +286,6 @@ with st.sidebar:
         step=0.5,
         help="Mempengaruhi konstanta ionisasi air (Kw)"
     )
-    # Volume Ditambahkan di bawah suhu
     v_add_ml = st.slider(
         "Volume Ditambahkan (mL)", 
         min_value=0, 
