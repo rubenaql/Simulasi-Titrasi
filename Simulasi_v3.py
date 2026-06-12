@@ -66,7 +66,7 @@ st.markdown(
 )
 
 # =========================
-# FUNGSI KIMIA (disingkat untuk menghemat tempat, lengkap)
+# FUNGSI KIMIA (sama seperti sebelumnya, disingkat)
 # =========================
 def hitung_kw(temp_c: float) -> float:
     return 10 ** (-14 + 0.031 * (temp_c - 25))
@@ -449,6 +449,26 @@ with st.sidebar:
         5. Gunakan tombol **Reset** untuk memulai ulang.
         """)
     st.markdown("---")
+    
+    # ===== INI DITAMBAHKAN: Pilihan Jenis Titrasi =====
+    st.subheader("🔬 Jenis Titrasi")
+    st.selectbox(
+        "Pilih percobaan",
+        options=["HCl_NaOH", "NaOH_HCl", "CH3COOH_NaOH", "NaOH_AsamOksalat", "HCl_Boraks", "Kompleksometri_EDTA_Ca", "Permanganometri_Fe"],
+        format_func=lambda x: {
+            "HCl_NaOH": "Asam Kuat + Basa Kuat (HCl + NaOH)",
+            "NaOH_HCl": "Basa Kuat + Asam Kuat (NaOH + HCl)",
+            "CH3COOH_NaOH": "Asam Lemah + Basa Kuat (CH₃COOH + NaOH)",
+            "NaOH_AsamOksalat": "Basa Kuat + Asam Oksalat (NaOH + H₂C₂O₄)",
+            "HCl_Boraks": "Asam Kuat + Boraks (HCl + Na₂B₄O₇)",
+            "Kompleksometri_EDTA_Ca": "Kompleksometri: EDTA vs Ca²⁺",
+            "Permanganometri_Fe": "Permanganometri: KMnO₄ vs Fe²⁺"
+        }.get(x, x),
+        key="jenis_titrasi",
+        help="Pilih jenis reaksi kimia yang akan disimulasikan."
+    )
+    st.markdown("---")
+    
     st.subheader("🧴 Larutan yang Dititrasi")
     st.number_input("Konsentrasi (M)", min_value=0.0, value=st.session_state.c0, step=0.01, format="%.4f", key="c0",
                     help="Semakin besar konsentrasi, semakin banyak zat yang perlu dititrasi.")
@@ -473,7 +493,6 @@ with st.sidebar:
                         help="Jumlah penitrasi yang sudah ditambahkan. Geser atau ketik angka.", disabled=disabled_add)
     
     # Parameter khusus berdasarkan jenis titrasi
-    # Kita gunakan st.session_state.jenis_titrasi langsung
     if st.session_state.jenis_titrasi == "CH3COOH_NaOH":
         st.number_input("pKa Asam Lemah", min_value=0.0, value=st.session_state.pKa, step=0.1, format="%.2f", key="pKa",
                         help="Untuk asam asetat, pKa = 4,76. Semakin kecil pKa, semakin kuat asam.")
