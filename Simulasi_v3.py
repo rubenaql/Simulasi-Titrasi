@@ -178,7 +178,7 @@ class Parameter:
     type_: str
     temp_c: float
     c0: float
-    v0_ml: float      # volume analit dalam mL (input user)
+    v0_ml: float
     c_add: float
     v_add_ml: float
     v_max: float
@@ -201,22 +201,20 @@ def hitung_ph(params: Parameter):
     return pH, status, Kw
 
 # =========================
-# FUNGSI WARNA INDIKATOR (diperbaiki)
+# FUNGSI WARNA INDIKATOR
 # =========================
 def get_indicator_color(pH, indicator):
     if indicator == "Phenolphthalein":
         if pH < 8.2:
-            # transparan agar tampak natural (tidak berwarna)
             return "rgba(255, 255, 255, 0.1)"
         elif pH < 10.0:
             ratio = (pH - 8.2) / 1.8
             r = 255
-            g = int(255 - 150 * ratio)   # 255 → 105
-            b = int(255 - 75 * ratio)    # 255 → 180
+            g = int(255 - 150 * ratio)
+            b = int(255 - 75 * ratio)
             return f"#{r:02x}{g:02x}{b:02x}"
         else:
             return "#ff69b4"
-
     elif indicator == "Methyl Orange":
         if pH < 3.1:
             return "#ff0000"
@@ -228,37 +226,44 @@ def get_indicator_color(pH, indicator):
             return f"#{r:02x}{g:02x}{b:02x}"
         else:
             return "#ffff00"
-
     elif indicator == "Bromothymol Blue":
         if pH < 6.0:
-            return "#ffff00"            # kuning
+            return "#ffff00"
         elif pH < 7.6:
             ratio = (pH - 6.0) / 1.6
             if ratio < 0.5:
-                # kuning → hijau (R menurun, B tetap 0)
                 r = int(255 * (1 - 2 * ratio))
                 g = 255
                 b = 0
             else:
-                # hijau → biru (G menurun, B meningkat)
                 r = 0
                 g = int(255 * (2 - 2 * ratio))
                 b = int(255 * (2 * ratio - 1))
             return f"#{r:02x}{g:02x}{b:02x}"
         else:
-            return "#0000ff"            # biru
-
+            return "#0000ff"
     return "#ffffff"
 
 # =========================
-# UI
+# INISIALISASI SESSION STATE
+# =========================
+if 'v_add_slider' not in st.session_state:
+    st.session_state.v_add_slider = 0
+if 'v_add_number' not in st.session_state:
+    st.session_state.v_add_number = 0.0
+
+def update_number_from_slider():
+    st.session_state.v_add_number = float(st.session_state.v_add_slider)
+
+def update_slider_from_number():
+    st.session_state.v_add_slider = int(round(st.session_state.v_add_number))
+
+# =========================
+# UI SIDEBAR
 # =========================
 st.title("Simulator Titrasi Interaktif")
 st.markdown("Simulasi titrasi asam-basa dengan kurva pH dan perubahan warna indikator.")
 
-# =========================
-# PANDUAN PENGGUNAAN (baru ditambahkan)
-# =========================
 with st.expander("📖 Cara Menggunakan Program", expanded=False):
     st.markdown("""
     ### Langkah-Langkah Menggunakan Simulator:
@@ -269,7 +274,7 @@ with st.expander("📖 Cara Menggunakan Program", expanded=False):
     2. **Atur Konsentrasi & Volume Analit** (larutan yang akan dititrasi).
     3. **Atur Konsentrasi Titran** (larutan penitrasi) dan **Volume Maksimum** yang akan ditampilkan pada kurva.
     4. **Pilih Indikator pH** untuk melihat perubahan warna sesuai trayek indikator tersebut.
-    5. **Geser Slider "Volume Ditambahkan"** untuk melihat:
+    5. **Geser Slider "Volume Ditambahkan"** atau **ketik langsung nilainya** untuk melihat:
         - Perubahan pH secara real-time
         - Warna larutan di wadah simulasi (kiri)
         - Posisi titik pada kurva titrasi (kanan)
@@ -310,7 +315,30 @@ with st.sidebar:
     v_max = st.slider("Volume Maksimum (mL)", min_value=10, max_value=100, value=50, key="v_max_slider")
     st.subheader("Parameter Tambahan")
     temp_c = st.slider("Suhu (C)", min_value=20.0, max_value=30.0, value=25.0, step=0.5, key="temp_c_slider")
-    v_add_ml = st.slider("Volume Ditambahkan (mL)", min_value=0, max_value=int(v_max), value=0, step=1, key="v_add_slider")
+    
+    # Slider volume ditambahkan
+    st.slider(
+        "Volume Ditambahkan (mL)",
+        min_value=0,
+        max_value=int(v_max),
+        value=st.session_state.v_add_slider,
+        step=1,
+        key="v_add_slider",
+        on_change=update_number_from_slider
+    )
+    # Number input manual volume ditambahkan (tersinkronisasi)
+    st.number_input(
+        "Volume Ditambahkan (mL) [Manual]",
+        min_value=0.0,
+        max_value=float(v_max),
+        value=st.session_state.v_add_number,
+        step=0.1,
+        format="%.1f",
+        key="v_add_number",
+        on_change=update_slider_from_number
+    )
+    v_add_ml = float(st.session_state.v_add_slider)  # gunakan slider sebagai acuan akhir
+    
     if type_ == "CH3COOH_NaOH":
         pKa = st.number_input("pKa Asam Lemah", min_value=0.0, value=4.76, step=0.1, format="%.2f", key="pKa")
     else:
@@ -330,12 +358,11 @@ with st.sidebar:
     st.markdown("---")
     st.subheader("Informasi Cepat")
     if c_add > 0:
-        ve_calc = (c0 * (v0_ml / 1000) / c_add) * 1000  # Ve dalam mL
+        ve_calc = (c0 * (v0_ml / 1000) / c_add) * 1000
         st.metric("Volume Ekuivalen (teoritis)", f"{ve_calc:.2f} mL")
     else:
         st.warning("Konsentrasi titran nol, tidak dapat menghitung volume ekuivalen.")
     
-    # Rekomendasi indikator
     if type_ == "HCl_NaOH":
         rec_ind = "Bromothymol Blue atau Phenolphthalein"
         if indicator not in ["Bromothymol Blue", "Phenolphthalein"]:
@@ -350,9 +377,11 @@ with st.sidebar:
             st.warning("Untuk titrasi asam lemah-basa kuat, indikator yang tepat adalah Phenolphthalein (perubahan tajam di daerah basa).")
     
     st.info(f"Indikator yang disarankan: {rec_ind}")
-    st.caption("Geser slider dan amati perubahan pH serta warna larutan.")
+    st.caption("Geser slider atau ketik volume dan amati perubahan pH serta warna larutan.")
 
-# Parameter objek
+# =========================
+# PERHITUNGAN UTAMA
+# =========================
 params = Parameter(
     type_=type_, temp_c=temp_c, c0=c0, v0_ml=v0_ml,
     c_add=c_add, v_add_ml=v_add_ml, v_max=v_max, pKa=pKa
@@ -385,7 +414,7 @@ with left:
     with col2:
         st.metric("Status", status)
         st.metric("Volume Ditambahkan", f"{v_add_ml:.1f} mL")
-        st.metric("Kw", f"{Kw:.14f}")   # ditampilkan sebagai desimal penuh, bukan notasi ilmiah
+        st.metric("Kw", f"{Kw:.14f}")
     
     with st.expander("Trayek Indikator"):
         if indicator == "Phenolphthalein":
@@ -412,7 +441,6 @@ if c_add > 0 and 0 <= Ve <= v_max:
     fig.add_vline(x=Ve, line_dash="dash", line_color="red", annotation_text="Titik Ekuivalen", annotation_position="top")
 fig.add_trace(go.Scatter(x=[v_add_ml], y=[pH], mode="markers", marker=dict(size=15, color="red", symbol="circle"), name="Titik Saat Ini"))
 
-# Area trayek indikator
 if indicator == "Phenolphthalein":
     fig.add_hrect(y0=8.2, y1=10, line_width=0, fillcolor="pink", opacity=0.2, annotation_text="Range Phenolphthalein")
 elif indicator == "Methyl Orange":
@@ -502,11 +530,10 @@ st.divider()
 st.subheader("Ringkasan")
 ringkasan = pd.DataFrame({
     "Parameter": ["pH", "Status", "Volume Ekuivalen (mL)", "Indikator", "Suhu (C)", "Kw"],
-    "Nilai": [round(pH,2), status, f"{Ve:.2f}", rec_ind, f"{temp_c:.1f}", f"{Kw:.14f}"]  # Kw ditampilkan tanpa notasi e
+    "Nilai": [round(pH,2), status, f"{Ve:.2f}", rec_ind, f"{temp_c:.1f}", f"{Kw:.14f}"]
 })
 st.table(ringkasan)
 
-# Caption dengan identitas kelompok
 st.caption("""
 Courtesy Of Kelompok 3 LPK | Simulator Titrasi Interaktif
 
