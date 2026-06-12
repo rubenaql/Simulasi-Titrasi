@@ -13,7 +13,7 @@ st.set_page_config(
 )
 
 # =========================
-# CSS KUSTOM UNTUK DARK MODE
+# CSS KUSTOM UNTUK DARK MODE DAN LEGENDA
 # =========================
 st.markdown(
     """
@@ -50,6 +50,14 @@ st.markdown(
         margin-top: 10px;
         border-radius: 5px;
         font-size: 13px;
+    }
+    .legend-box {
+        background-color: rgba(100, 100, 100, 0.1);
+        border: 1px solid #cccccc;
+        border-radius: 5px;
+        padding: 8px;
+        margin-top: 8px;
+        font-size: 11px;
     }
     </style>
     """,
@@ -345,8 +353,30 @@ class Parameter:
     E0_Mn: float = 1.51
 
 # =========================
-# FUNGSI UTAMA PERHITUNGAN
+# FUNGSI UTAMA PERHITUNGAN (dengan caching)
 # =========================
+@st.cache_data(ttl=3600, show_spinner=False)
+def hitung_kurva(jenis_titrasi, temp_c, c0, v0_ml, c_add, v_max, pKa, logKf, E0_Fe, E0_Mn):
+    vs = np.linspace(0, v_max, 250)
+    ys = []
+    for v in vs:
+        tmp_params = Parameter(
+            jenis_titrasi=jenis_titrasi,
+            temp_c=temp_c,
+            c0=c0,
+            v0_ml=v0_ml,
+            c_add=c_add,
+            v_add_ml=float(v),
+            v_max=v_max,
+            pKa=pKa,
+            logKf=logKf,
+            E0_Fe=E0_Fe,
+            E0_Mn=E0_Mn
+        )
+        y, _, _ = hitung_nilai(tmp_params)
+        ys.append(y)
+    return vs, ys
+
 def hitung_nilai(params: Parameter):
     Kw = hitung_kw(params.temp_c)
     v0_liter = params.v0_ml / 1000.0
@@ -407,6 +437,25 @@ def hitung_nilai(params: Parameter):
         raise ValueError("Jenis titrasi tidak dikenal")
 
 # =========================
+# RESET SESSION STATE
+# =========================
+def reset_to_default():
+    st.session_state.jenis_titrasi = "HCl_NaOH"
+    st.session_state.c0 = 0.1
+    st.session_state.v0_ml = 50.0
+    st.session_state.c_add = 0.1
+    st.session_state.v_max = 100
+    st.session_state.temp_c = 25.0
+    st.session_state.v_add = 0.0
+    st.session_state.pKa = 4.76
+    st.session_state.logKf = 10.7
+    st.session_state.E0_Fe = 0.77
+    st.session_state.E0_Mn = 1.51
+    st.session_state.indicator_select = "Phenolphthalein"
+    # Force rerun
+    st.rerun()
+
+# =========================
 # UI SIDEBAR
 # =========================
 st.title("Simulator Titrasi Interaktif")
@@ -438,30 +487,69 @@ with st.sidebar:
     )
     st.markdown("---")
     st.subheader("Larutan Analit")
-    c0 = st.number_input("Konsentrasi Analit (M)", min_value=0.0, value=0.1, step=0.01, format="%.4f", key="c0")
-    v0_ml = st.number_input("Volume Analit (mL)", min_value=1.0, value=50.0, step=5.0, format="%.1f", key="v0_ml")
+    c0 = st.number_input(
+        "Konsentrasi Analit (M)", min_value=0.0, value=0.1, step=0.01, format="%.4f", key="c0",
+        help="Konsentrasi zat yang akan dititrasi (dalam molar, M)"
+    )
+    v0_ml = st.number_input(
+        "Volume Analit (mL)", min_value=1.0, value=50.0, step=5.0, format="%.1f", key="v0_ml",
+        help="Volume larutan analit dalam mililiter"
+    )
 
     st.subheader("Larutan Titran")
-    c_add = st.number_input("Konsentrasi Titran (M)", min_value=0.0, value=0.1, step=0.01, format="%.4f", key="c_add")
-    v_max = st.number_input("Volume Buret (mL)", min_value=10, max_value=500, value=100, step=10, key="v_max")
+    c_add = st.number_input(
+        "Konsentrasi Titran (M)", min_value=0.0, value=0.1, step=0.01, format="%.4f", key="c_add",
+        help="Konsentrasi larutan penitrasi (dalam molar, M)"
+    )
+    v_max = st.number_input(
+        "Volume Buret (mL)", min_value=10, max_value=500, value=100, step=10, key="v_max",
+        help="Volume maksimum buret yang akan ditampilkan pada kurva"
+    )
 
     st.subheader("Parameter Tambahan")
-    temp_c = st.number_input("Suhu Ruangan (°C)", min_value=0.0, max_value=100.0, value=25.0, step=1.0, key="temp_c")
-    v_add_ml = st.number_input("Volume Ditambahkan (mL)", min_value=0.0, max_value=float(v_max), value=0.0, step=1.0, format="%.1f", key="v_add")
+    temp_c = st.number_input(
+        "Suhu Ruangan (°C)", min_value=0.0, max_value=50.0, value=25.0, step=1.0, key="temp_c",
+        help="Suhu mempengaruhi nilai Kw dan pH netral. Rentang 0-50°C."
+    )
+    
+    # Peringatan jika konsentrasi titran nol
+    if c_add <= 0:
+        st.warning("⚠️ Konsentrasi titran harus > 0 untuk melakukan titrasi. Volume ditambahkan dinonaktifkan.")
+        v_add_ml = 0.0
+        disabled_add = True
+    else:
+        disabled_add = False
+        v_add_ml = st.number_input(
+            "Volume Ditambahkan (mL)", min_value=0.0, max_value=float(v_max), value=0.0, step=1.0, format="%.1f", key="v_add",
+            help="Volume titran yang telah ditambahkan (dalam mL). Geser atau ketik langsung.",
+            disabled=disabled_add
+        )
 
     if jenis_titrasi == "CH3COOH_NaOH":
-        pKa = st.number_input("pKa Asam Lemah", min_value=0.0, value=4.76, step=0.1, format="%.2f", key="pKa")
+        pKa = st.number_input(
+            "pKa Asam Lemah", min_value=0.0, value=4.76, step=0.1, format="%.2f", key="pKa",
+            help="Nilai pKa asam asetat = 4,76. Untuk asam lain dapat disesuaikan."
+        )
     else:
         pKa = 4.76
 
     if jenis_titrasi == "Kompleksometri_EDTA_Ca":
-        logKf = st.number_input("log Kf (Ca-EDTA)", min_value=0.0, value=10.7, step=0.1, format="%.1f", key="logKf")
+        logKf = st.number_input(
+            "log Kf (Ca-EDTA)", min_value=0.0, value=10.7, step=0.1, format="%.1f", key="logKf",
+            help="Konstanta stabilitas kompleks Ca-EDTA (log Kf = 10,7 pada pH 10)"
+        )
     else:
         logKf = 10.7
 
     if jenis_titrasi == "Permanganometri_Fe":
-        E0_Fe = st.number_input("E0 Fe3+/Fe2+ (V)", min_value=0.0, value=0.77, step=0.01, format="%.2f", key="E0_Fe")
-        E0_Mn = st.number_input("E0 MnO4-/Mn2+ (V)", min_value=0.0, value=1.51, step=0.01, format="%.2f", key="E0_Mn")
+        E0_Fe = st.number_input(
+            "E0 Fe3+/Fe2+ (V)", min_value=0.0, value=0.77, step=0.01, format="%.2f", key="E0_Fe",
+            help="Potensial standar reduksi pasangan Fe3+/Fe2+ dalam suasana asam 1 M"
+        )
+        E0_Mn = st.number_input(
+            "E0 MnO4-/Mn2+ (V)", min_value=0.0, value=1.51, step=0.01, format="%.2f", key="E0_Mn",
+            help="Potensial standar reduksi pasangan MnO4-/Mn2+ dalam suasana asam 1 M"
+        )
     else:
         E0_Fe, E0_Mn = 0.77, 1.51
 
@@ -476,16 +564,19 @@ with st.sidebar:
                 "Methyl Orange": "Methyl Orange (3.1-4.4)",
                 "Bromothymol Blue": "Bromothymol Blue (6.0-7.6)",
             }.get(x, x),
-            key="indicator_select"
+            key="indicator_select",
+            help="Pilih indikator untuk melihat perubahan warna sesuai trayek pH"
         )
-        # Tampilkan rekomendasi indikator
         rec = get_indicator_recommendation(jenis_titrasi)
         st.markdown(f'<div class="recommendation-box">{rec}</div>', unsafe_allow_html=True)
     else:
         indicator = None
-        # Untuk titrasi non-pH, tetap tampilkan rekomendasi indikator/autoindikator
         rec = get_indicator_recommendation(jenis_titrasi)
         st.markdown(f'<div class="recommendation-box">{rec}</div>', unsafe_allow_html=True)
+
+    # Tombol reset
+    if st.button("🔄 Reset ke Default", use_container_width=True):
+        reset_to_default()
 
 # =========================
 # PERHITUNGAN UTAMA
@@ -507,6 +598,12 @@ params = Parameter(
 nilai, status, satuan = hitung_nilai(params)
 Ve = (c0 * (v0_ml / 1000) / c_add) * 1000 if c_add > 0 else 0
 
+# Peringatan jika Ve > v_max
+if c_add > 0 and Ve > v_max:
+    st.sidebar.warning(f"⚠️ Volume ekuivalen teoritis ({Ve:.1f} mL) melebihi volume maksimum buret ({v_max} mL). Naikkan 'Volume Buret' untuk melihat titik ekuivalen pada kurva.")
+elif c_add > 0:
+    st.sidebar.success(f"📌 Volume ekuivalen teoritis: {Ve:.2f} mL")
+
 # Tentukan warna larutan
 if jenis_titrasi in ["HCl_NaOH", "NaOH_HCl", "CH3COOH_NaOH", "NaOH_AsamOksalat", "HCl_Boraks"] and indicator is not None:
     solution_color = get_indicator_color(nilai, indicator)
@@ -514,9 +611,28 @@ if jenis_titrasi in ["HCl_NaOH", "NaOH_HCl", "CH3COOH_NaOH", "NaOH_AsamOksalat",
 elif jenis_titrasi == "Kompleksometri_EDTA_Ca":
     solution_color = get_kompleksometri_color(nilai, status)
     info_indicator = " | Indikator EBT"
+    # Tambahkan legenda warna di sidebar
+    with st.sidebar:
+        st.markdown("""
+        <div class="legend-box">
+        <b>🎨 Legenda warna EBT:</b><br>
+        🔴 Merah anggur → Kelebihan Ca²⁺<br>
+    🔵 Biru medium → Titik ekuivalen<br>
+    💙 Biru terang → Kelebihan EDTA
+        </div>
+        """, unsafe_allow_html=True)
 elif jenis_titrasi == "Permanganometri_Fe":
     solution_color = get_permanganometri_color(nilai, status)
     info_indicator = " | Autoindikator KMnO₄"
+    with st.sidebar:
+        st.markdown("""
+        <div class="legend-box">
+        <b>🎨 Legenda warna KMnO₄:</b><br>
+        🟣 Ungu → Kelebihan KMnO₄<br>
+        🟡 Kuning pucat → Kelebihan Fe²⁺ (warna Fe³⁺)<br>
+        🩷 Merah muda pucat → Titik ekuivalen
+        </div>
+        """, unsafe_allow_html=True)
 else:
     solution_color = "#f0f0f0"
     info_indicator = ""
@@ -552,30 +668,17 @@ with left:
             </div>
         """, unsafe_allow_html=True)
 
-# Kurva titrasi
-vs = np.linspace(0, v_max, 250)
-ys = []
-for v in vs:
-    tmp_params = Parameter(
-        jenis_titrasi=jenis_titrasi,
-        temp_c=temp_c,
-        c0=c0,
-        v0_ml=v0_ml,
-        c_add=c_add,
-        v_add_ml=float(v),
-        v_max=v_max,
-        pKa=pKa,
-        logKf=logKf,
-        E0_Fe=E0_Fe,
-        E0_Mn=E0_Mn
-    )
-    y, _, _ = hitung_nilai(tmp_params)
-    ys.append(y)
+# Kurva titrasi (menggunakan cache)
+if c_add > 0:
+    vs, phs = hitung_kurva(jenis_titrasi, temp_c, c0, v0_ml, c_add, v_max, pKa, logKf, E0_Fe, E0_Mn)
+else:
+    vs = np.linspace(0, v_max, 250)
+    phs = [0]*len(vs)
 
 fig = go.Figure()
 fig.add_trace(
     go.Scatter(
-        x=vs, y=ys, mode="lines", line=dict(width=4, color="#00ff99"), name="Kurva"
+        x=vs, y=phs, mode="lines", line=dict(width=4, color="#00ff99"), name="Kurva"
     )
 )
 if c_add > 0 and 0 <= Ve <= v_max:
@@ -639,5 +742,31 @@ elif jenis_titrasi == "Kompleksometri_EDTA_Ca":
 elif jenis_titrasi == "Permanganometri_Fe":
     st.latex(r"MnO_4^- + 5Fe^{2+} + 8H^+ \rightarrow Mn^{2+} + 5Fe^{3+} + 4H_2O")
     st.markdown(f"E° Fe³⁺/Fe²⁺ = {E0_Fe} V, E° MnO₄⁻/Mn²⁺ = {E0_Mn} V. Autoindikator: ungu (kelebihan KMnO₄)")
+
+# Panduan lengkap
+with st.expander("📘 Panduan Lengkap & Cara Penggunaan", expanded=False):
+    st.markdown("""
+    ### Cara Menggunakan Simulator
+    1. **Pilih jenis titrasi** di sidebar.
+    2. **Atur konsentrasi dan volume** larutan analit (yang dititrasi) dan titran (penitrasi).
+    3. **Tentukan volume maksimum buret** (tampilan kurva).
+    4. **Masukkan volume titran yang ditambahkan** untuk melihat pH/pCa/potensial saat itu.
+    5. **Pilih indikator** (untuk titrasi asam-basa) dan amati perubahan warna wadah larutan.
+    6. **Gunakan tombol reset** untuk mengembalikan semua nilai ke default.
+    
+    ### Rumus yang Digunakan
+    - **Asam kuat + basa kuat**: pH dihitung dari kelebihan H⁺ atau OH⁻, dengan koreksi autoprotolisis air.
+    - **Asam lemah + basa kuat**: Persamaan Henderson-Hasselbalch untuk daerah buffer, dan hidrolisis garam pada titik ekuivalen.
+    - **Asam oksalat + NaOH**: Pendekatan dua tahap dengan Ka1 dan Ka2.
+    - **Boraks + HCl**: Reaksi menghasilkan H₃BO₃ (asam lemah).
+    - **Kompleksometri**: Perhitungan [Ca²⁺] bebas berdasarkan konstanta stabilitas Kf.
+    - **Permanganometri**: Potensial dihitung dengan persamaan Nernst untuk setiap daerah.
+    
+    ### Tips
+    - Pastikan konsentrasi titran > 0.
+    - Jika volume ekuivalen melebihi volume maksimum, naikkan nilai "Volume Buret".
+    - Suhu 25°C memberikan nilai Kw = 1e-14 (pH netral 7). Suhu lain menggeser pH netral.
+    - Indikator yang tepat akan berubah warna tepat di sekitar titik ekuivalen.
+    """)
 
 st.caption("Simulator Titrasi Lengkap - Kelompok 3 LPK")
