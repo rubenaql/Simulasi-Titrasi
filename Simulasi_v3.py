@@ -505,4 +505,10 @@ ringkasan = pd.DataFrame({
     "Nilai": [round(pH,2), status, f"{Ve:.2f}", rec_ind, f"{temp_c:.1f}", f"{Kw:.2e}"]
 })
 st.table(ringkasan)
-st.caption("Courtesy Of Kelompok 3 LPK | Simulator Titrasi Interaktif")
+st.caption("Courtesy Of Kelompok 3 LPK = 
+Arsyidah Fitriani 		    (2560583)
+Felinda Isnantika Putri 	(2560632)
+Naysilla Zyanca Putri 	(2560721)
+Nuh Habil Alim Ma’ruf	(2560730)
+Ruben Aqilla Harjanto 	(2560764)
+")
