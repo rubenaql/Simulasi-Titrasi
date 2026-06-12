@@ -11,7 +11,7 @@ import streamlit as st
 st.set_page_config(
     page_title="Simulator Titrasi",
     layout="wide",
-    page_icon="🧪",
+    page_icon="",
     initial_sidebar_state="expanded",
 )
 
@@ -266,7 +266,7 @@ with st.sidebar:
     c_add = st.number_input("Konsentrasi (M)", min_value=0.0, value=0.1, step=0.01, format="%.4f", key="c_add")
     v_max = st.slider("Volume Maksimum (mL)", min_value=10, max_value=100, value=50, key="v_max_slider")
     st.subheader("Parameter Tambahan")
-    temp_c = st.slider("Suhu (°C)", min_value=20.0, max_value=30.0, value=25.0, step=0.5, key="temp_c_slider")
+    temp_c = st.slider("Suhu (C)", min_value=20.0, max_value=30.0, value=25.0, step=0.5, key="temp_c_slider")
     v_add_ml = st.slider("Volume Ditambahkan (mL)", min_value=0, max_value=int(v_max), value=0, step=1, key="v_add_slider")
     if type_ == "CH3COOH_NaOH":
         pKa = st.number_input("pKa Asam Lemah", min_value=0.0, value=4.76, step=0.1, format="%.2f", key="pKa")
@@ -338,7 +338,7 @@ with left:
     with col1:
         st.metric("pH", f"{pH:.2f}")
         st.metric("Volume Ekuivalen", f"{Ve:.2f} mL")
-        st.metric("Suhu", f"{temp_c:.1f} °C")
+        st.metric("Suhu", f"{temp_c:.1f} C")
     with col2:
         st.metric("Status", status)
         st.metric("Volume Ditambahkan", f"{v_add_ml:.1f} mL")
@@ -458,22 +458,8 @@ if st.button("Mulai Simulasi Otomatis", type="primary", key="start_auto"):
 st.divider()
 st.subheader("Ringkasan")
 ringkasan = pd.DataFrame({
-    "Parameter": ["pH", "Status", "Volume Ekuivalen (mL)", "Indikator", "Suhu (°C)", "Kw"],
+    "Parameter": ["pH", "Status", "Volume Ekuivalen (mL)", "Indikator", "Suhu (C)", "Kw"],
     "Nilai": [round(pH,2), status, f"{Ve:.2f}", rec_ind, f"{temp_c:.1f}", f"{Kw:.2e}"]
 })
 st.table(ringkasan)
-
-# =========================
-# PANDUAN PENGGUNAAN (DITAMBAHKAN)
-# =========================
-st.divider()
-with st.expander("📖 Panduan Penggunaan & Instalasi", expanded=False):
-    st.markdown('''
-        ## Panduan Lengkap Simulator Titrasi
-
-        ### 1. Persyaratan Sistem
-        - Python 3.8 atau lebih baru
-        - Pip (manajer paket Python)
-
-        ### 2. Instalasi
-        Buka terminal/command prompt, lalu jalankan:
+st.caption("Courtesy Of Kelompok 3 LPK | Simulator Titrasi Interaktif")
