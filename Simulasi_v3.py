@@ -456,16 +456,17 @@ else:
     solution_color = "#f0f0f0"
     info_indicator = ""
 
-# Layout utama
+# Layout utama - dengan perbaikan tampilan teks status
 left, right = st.columns([1, 2])
 with left:
     st.subheader("Larutan")
     st.markdown(
         f"""
-        <div style="width:220px; height:320px; border:2px solid #cccccc; border-radius:10px; margin:auto; 
+        <div style="width:220px; height:340px; border:2px solid #cccccc; border-radius:10px; margin:auto; 
                     background:{solution_color}; position:relative; overflow:hidden; box-shadow:0 4px 8px rgba(0,0,0,0.1);">
             <div style="position:absolute; bottom:10px; left:0; right:0; text-align:center; 
-                        background:rgba(255,255,255,0.6); padding:5px; font-size:12px; font-weight:bold;">
+                        background:rgba(255,255,255,0.7); padding:8px; font-size:11px; font-weight:bold;
+                        word-wrap:break-word; white-space:normal; max-height:90px; overflow-y:auto;">
                 {satuan.upper()}: {nilai:.3f}{info_indicator}<br>
                 {status}
             </div>
