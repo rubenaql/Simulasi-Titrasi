@@ -237,7 +237,7 @@ with st.sidebar:
     st.subheader("Parameter Tambahan")
     # Suhu: input manual (number_input)
     temp_c = st.number_input(
-        "Suhu (°C)", min_value=0.0, max_value=100.0, value=25.0, step=1.0, key="temp_c"
+        "Suhu Ruangan (°C)", min_value=0.0, max_value=100.0, value=25.0, step=1.0, key="temp_c"
     )
 
     # Volume Ditambahkan: hanya input manual (number_input), tanpa slider
