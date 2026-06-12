@@ -312,7 +312,16 @@ with st.sidebar:
                             help="Volume larutan analit dalam mililiter")
     st.subheader("Larutan Titran")
     c_add = st.number_input("Konsentrasi (M)", min_value=0.0, value=0.1, step=0.01, format="%.4f", key="c_add")
-    v_max = st.slider("Volume Maksimum (mL)", min_value=10, max_value=100, value=50, key="v_max_slider")
+    
+    # Volume Maksimum diubah default-nya menjadi 100 mL
+    v_max = st.slider(
+        "Volume Maksimum (mL)",
+        min_value=10,
+        max_value=100,
+        value=100,          # <-- default 100 mL, bukan 50
+        key="v_max_slider"
+    )
+    
     st.subheader("Parameter Tambahan")
     temp_c = st.slider("Suhu (C)", min_value=20.0, max_value=30.0, value=25.0, step=0.5, key="temp_c_slider")
     
@@ -337,7 +346,7 @@ with st.sidebar:
         key="v_add_number",
         on_change=update_slider_from_number
     )
-    v_add_ml = float(st.session_state.v_add_slider)  # gunakan slider sebagai acuan akhir
+    v_add_ml = float(st.session_state.v_add_slider)
     
     if type_ == "CH3COOH_NaOH":
         pKa = st.number_input("pKa Asam Lemah", min_value=0.0, value=4.76, step=0.1, format="%.2f", key="pKa")
