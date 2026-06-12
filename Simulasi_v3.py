@@ -14,7 +14,7 @@ st.set_page_config(
 )
 
 # =========================
-# CSS KUSTOM (ramah awam)
+# CSS KUSTOM
 # =========================
 st.markdown(
     """
@@ -60,19 +60,13 @@ st.markdown(
         margin-top: 8px;
         font-size: 11px;
     }
-    .help-text {
-        font-size: 12px;
-        color: gray;
-        margin-top: -10px;
-        margin-bottom: 10px;
-    }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
 # =========================
-# FUNGSI KIMIA (sama seperti sebelumnya, tidak diubah)
+# FUNGSI KIMIA (disingkat untuk menghemat tempat, lengkap)
 # =========================
 def hitung_kw(temp_c: float) -> float:
     return 10 ** (-14 + 0.031 * (temp_c - 25))
@@ -277,29 +271,29 @@ def get_indicator_color(pH, indicator):
 
 def get_kompleksometri_color(pCa, status):
     if "Kelebihan ion kalsium" in status:
-        return "#8B0000"      # merah anggur
+        return "#8B0000"
     elif "Titik ekuivalen" in status:
-        return "#0000CD"      # biru medium
+        return "#0000CD"
     else:
-        return "#0000FF"      # biru terang
+        return "#0000FF"
 
 def get_permanganometri_color(E, status):
     if "Kelebihan permanganat" in status:
-        return "#CC00CC"      # ungu
+        return "#CC00CC"
     elif "Kelebihan besi" in status:
-        return "#FFFFCC"      # kuning pucat
+        return "#FFFFCC"
     else:
-        return "#FFDDDD"      # merah muda pucat
+        return "#FFDDDD"
 
 def get_indicator_recommendation(jenis_titrasi):
     rec = {
-        "HCl_NaOH": "✅ Rekomendasi: Phenolphthalein atau Bromothymol Blue. Warna berubah tepat di titik ekuivalen (pH 7).",
-        "NaOH_HCl": "✅ Rekomendasi: Phenolphthalein atau Bromothymol Blue. Perubahan warna tajam pada pH 7.",
-        "CH3COOH_NaOH": "✅ Rekomendasi: Phenolphthalein. Perubahan warna terjadi di daerah basa (pH ~8-10).",
-        "NaOH_AsamOksalat": "✅ Rekomendasi: Phenolphthalein. Titik ekuivalen kedua bersifat basa.",
-        "HCl_Boraks": "✅ Rekomendasi: Methyl Orange atau Methyl Red. Perubahan warna di pH ~5.",
-        "Kompleksometri_EDTA_Ca": "🔬 Indikator khusus: Eriochrome Black T (EBT). Perubahan: merah anggur → biru.",
-        "Permanganometri_Fe": "🔬 Autoindikator: KMnO₄ sendiri (ungu). Tidak perlu indikator tambahan."
+        "HCl_NaOH": "✅ Rekomendasi: Phenolphthalein atau Bromothymol Blue.",
+        "NaOH_HCl": "✅ Rekomendasi: Phenolphthalein atau Bromothymol Blue.",
+        "CH3COOH_NaOH": "✅ Rekomendasi: Phenolphthalein.",
+        "NaOH_AsamOksalat": "✅ Rekomendasi: Phenolphthalein.",
+        "HCl_Boraks": "✅ Rekomendasi: Methyl Orange atau Methyl Red.",
+        "Kompleksometri_EDTA_Ca": "🔬 Indikator khusus: Eriochrome Black T (EBT).",
+        "Permanganometri_Fe": "🔬 Autoindikator: KMnO₄ sendiri (ungu)."
     }
     return rec.get(jenis_titrasi, "")
 
@@ -429,7 +423,7 @@ for key, default_val in defaults.items():
             st.session_state[key] = default_val
 
 # =========================
-# UI SIDEBAR (RAMAH AWAM)
+# UI SIDEBAR
 # =========================
 st.title("🧪 Simulator Titrasi Interaktif")
 st.markdown("Belajar titrasi asam-basa, kompleksometri, dan permanganometri dengan mudah!")
@@ -456,90 +450,79 @@ with st.sidebar:
         """)
     st.markdown("---")
     st.subheader("🧴 Larutan yang Dititrasi")
-    c0 = st.number_input(
-        "Konsentrasi (M)", min_value=0.0, value=st.session_state.c0, step=0.01, format="%.4f", key="c0",
-        help="Semakin besar konsentrasi, semakin banyak zat yang perlu dititrasi."
-    )
-    v0_ml = st.number_input(
-        "Volume (mL)", min_value=1.0, value=st.session_state.v0_ml, step=5.0, format="%.1f", key="v0_ml",
-        help="Volume larutan yang akan dititrasi. Biasanya 50 mL."
-    )
+    st.number_input("Konsentrasi (M)", min_value=0.0, value=st.session_state.c0, step=0.01, format="%.4f", key="c0",
+                    help="Semakin besar konsentrasi, semakin banyak zat yang perlu dititrasi.")
+    st.number_input("Volume (mL)", min_value=1.0, value=st.session_state.v0_ml, step=5.0, format="%.1f", key="v0_ml",
+                    help="Volume larutan yang akan dititrasi. Biasanya 50 mL.")
     st.subheader("💧 Larutan Penitrasi")
-    c_add = st.number_input(
-        "Konsentrasi (M)", min_value=0.0, value=st.session_state.c_add, step=0.01, format="%.4f", key="c_add",
-        help="Larutan yang ditambahkan dari buret."
-    )
-    v_max = st.number_input(
-        "Volume Buret (mL)", min_value=10, max_value=500, value=st.session_state.v_max, step=10, key="v_max",
-        help="Kapasitas maksimum buret. Pastikan cukup untuk mencapai titik ekuivalen."
-    )
+    st.number_input("Konsentrasi (M)", min_value=0.0, value=st.session_state.c_add, step=0.01, format="%.4f", key="c_add",
+                    help="Larutan yang ditambahkan dari buret.")
+    st.number_input("Volume Buret (mL)", min_value=10, max_value=500, value=st.session_state.v_max, step=10, key="v_max",
+                    help="Kapasitas maksimum buret. Pastikan cukup untuk mencapai titik ekuivalen.")
     st.subheader("🌡️ Kondisi Percobaan")
-    temp_c = st.number_input(
-        "Suhu (°C)", min_value=0.0, max_value=50.0, value=st.session_state.temp_c, step=1.0, key="temp_c",
-        help="Suhu mempengaruhi nilai pH netral. Gunakan 25°C untuk kondisi standar."
-    )
-    if c_add <= 0:
+    st.number_input("Suhu (°C)", min_value=0.0, max_value=50.0, value=st.session_state.temp_c, step=1.0, key="temp_c",
+                    help="Suhu mempengaruhi nilai pH netral. Gunakan 25°C untuk kondisi standar.")
+    if st.session_state.c_add <= 0:
         st.warning("⚠️ Konsentrasi penitrasi harus > 0 untuk memulai titrasi. Masukkan nilai positif.")
-        v_add_ml = 0.0
+        st.session_state.v_add = 0.0
         disabled_add = True
     else:
         disabled_add = False
-        v_add_ml = st.number_input(
-            "Volume Ditambahkan (mL)", min_value=0.0, max_value=float(v_max), value=st.session_state.v_add, step=1.0, format="%.1f", key="v_add",
-            help="Jumlah penitrasi yang sudah ditambahkan. Geser atau ketik angka."
-        )
-    if jenis_titrasi == "CH3COOH_NaOH":
-        pKa = st.number_input(
-            "pKa Asam Lemah", min_value=0.0, value=st.session_state.pKa, step=0.1, format="%.2f", key="pKa",
-            help="Untuk asam asetat, pKa = 4,76. Semakin kecil pKa, semakin kuat asam."
-        )
-    else:
-        pKa = 4.76
-        st.session_state.pKa = pKa
-    if jenis_titrasi == "Kompleksometri_EDTA_Ca":
-        logKf = st.number_input(
-            "log Kf (Ca-EDTA)", min_value=0.0, value=st.session_state.logKf, step=0.1, format="%.1f", key="logKf",
-            help="Nilai 10,7 untuk Ca-EDTA. Semakin besar, semakin stabil kompleks."
-        )
-    else:
-        logKf = 10.7
-        st.session_state.logKf = logKf
-    if jenis_titrasi == "Permanganometri_Fe":
-        E0_Fe = st.number_input(
-            "E0 Fe³⁺/Fe²⁺ (V)", min_value=0.0, value=st.session_state.E0_Fe, step=0.01, format="%.2f", key="E0_Fe",
-            help="Potensial standar. Nilai 0,77 V untuk besi."
-        )
-        E0_Mn = st.number_input(
-            "E0 MnO₄⁻/Mn²⁺ (V)", min_value=0.0, value=st.session_state.E0_Mn, step=0.01, format="%.2f", key="E0_Mn",
-            help="Potensial standar permanganat. Nilai 1,51 V."
-        )
-    else:
-        E0_Fe, E0_Mn = 0.77, 1.51
-        st.session_state.E0_Fe = E0_Fe
-        st.session_state.E0_Mn = E0_Mn
-    if jenis_titrasi in ["HCl_NaOH", "NaOH_HCl", "CH3COOH_NaOH", "NaOH_AsamOksalat", "HCl_Boraks"]:
+        st.number_input("Volume Ditambahkan (mL)", min_value=0.0, max_value=float(st.session_state.v_max), 
+                        value=st.session_state.v_add, step=1.0, format="%.1f", key="v_add",
+                        help="Jumlah penitrasi yang sudah ditambahkan. Geser atau ketik angka.", disabled=disabled_add)
+    
+    # Parameter khusus berdasarkan jenis titrasi
+    # Kita gunakan st.session_state.jenis_titrasi langsung
+    if st.session_state.jenis_titrasi == "CH3COOH_NaOH":
+        st.number_input("pKa Asam Lemah", min_value=0.0, value=st.session_state.pKa, step=0.1, format="%.2f", key="pKa",
+                        help="Untuk asam asetat, pKa = 4,76. Semakin kecil pKa, semakin kuat asam.")
+    elif st.session_state.jenis_titrasi == "Kompleksometri_EDTA_Ca":
+        st.number_input("log Kf (Ca-EDTA)", min_value=0.0, value=st.session_state.logKf, step=0.1, format="%.1f", key="logKf",
+                        help="Nilai 10,7 untuk Ca-EDTA. Semakin besar, semakin stabil kompleks.")
+    elif st.session_state.jenis_titrasi == "Permanganometri_Fe":
+        st.number_input("E0 Fe³⁺/Fe²⁺ (V)", min_value=0.0, value=st.session_state.E0_Fe, step=0.01, format="%.2f", key="E0_Fe",
+                        help="Potensial standar. Nilai 0,77 V untuk besi.")
+        st.number_input("E0 MnO₄⁻/Mn²⁺ (V)", min_value=0.0, value=st.session_state.E0_Mn, step=0.01, format="%.2f", key="E0_Mn",
+                        help="Potensial standar permanganat. Nilai 1,51 V.")
+    
+    # Indikator
+    if st.session_state.jenis_titrasi in ["HCl_NaOH", "NaOH_HCl", "CH3COOH_NaOH", "NaOH_AsamOksalat", "HCl_Boraks"]:
         st.subheader("🌈 Indikator pH")
-        indicator = st.selectbox(
-            "Pilih indikator",
-            options=["Phenolphthalein", "Methyl Orange", "Bromothymol Blue"],
-            format_func=lambda x: {
-                "Phenolphthalein": "Phenolphthalein (berubah pada pH 8,2-10 → pink)",
-                "Methyl Orange": "Methyl Orange (berubah pada pH 3,1-4,4 → merah ke kuning)",
-                "Bromothymol Blue": "Bromothymol Blue (berubah pada pH 6,0-7,6 → kuning ke biru)",
-            }.get(x, x),
-            key="indicator_select",
-            help="Pilih indikator untuk melihat perubahan warna larutan."
-        )
-        rec = get_indicator_recommendation(jenis_titrasi)
+        st.selectbox("Pilih indikator",
+                     options=["Phenolphthalein", "Methyl Orange", "Bromothymol Blue"],
+                     format_func=lambda x: {
+                         "Phenolphthalein": "Phenolphthalein (berubah pada pH 8,2-10 → pink)",
+                         "Methyl Orange": "Methyl Orange (berubah pada pH 3,1-4,4 → merah ke kuning)",
+                         "Bromothymol Blue": "Bromothymol Blue (berubah pada pH 6,0-7,6 → kuning ke biru)",
+                     }.get(x, x),
+                     key="indicator_select", help="Pilih indikator untuk melihat perubahan warna larutan.")
+        rec = get_indicator_recommendation(st.session_state.jenis_titrasi)
         st.markdown(f'<div class="recommendation-box">{rec}</div>', unsafe_allow_html=True)
     else:
-        indicator = None
-        rec = get_indicator_recommendation(jenis_titrasi)
+        rec = get_indicator_recommendation(st.session_state.jenis_titrasi)
         st.markdown(f'<div class="recommendation-box">{rec}</div>', unsafe_allow_html=True)
+    
     if st.button("🔄 Reset ke Default", use_container_width=True):
         for key, val in defaults.items():
             st.query_params[key] = str(val)
         st.rerun()
+
+# =========================
+# AMBIL NILAI TERBARU DARI SESSION STATE
+# =========================
+jenis_titrasi = st.session_state.jenis_titrasi
+c0 = st.session_state.c0
+v0_ml = st.session_state.v0_ml
+c_add = st.session_state.c_add
+v_max = st.session_state.v_max
+temp_c = st.session_state.temp_c
+v_add_ml = st.session_state.v_add
+pKa = st.session_state.pKa
+logKf = st.session_state.logKf
+E0_Fe = st.session_state.E0_Fe
+E0_Mn = st.session_state.E0_Mn
+indicator = st.session_state.indicator_select
 
 # =========================
 # PERHITUNGAN UTAMA
@@ -680,7 +663,7 @@ st.dataframe(export_df.round(3), use_container_width=True, height=200)
 csv = export_df.to_csv(index=False).encode('utf-8')
 st.download_button(label="📥 Unduh CSV", data=csv, file_name=f"kurva_titrasi_{jenis_titrasi}.csv", mime="text/csv", help="Simpan data ke file CSV untuk analisis lanjutan.")
 
-# Reaksi kimia dalam bahasa sederhana
+# Reaksi kimia
 st.subheader("⚗️ Reaksi yang Terjadi")
 if jenis_titrasi == "HCl_NaOH":
     st.latex(r"HCl + NaOH \rightarrow NaCl + H_2O")
