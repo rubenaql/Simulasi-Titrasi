@@ -9,7 +9,7 @@ import streamlit as st
 st.set_page_config(
     page_title="Simulator Titrasi - Belajar Kimia Interaktif",
     layout="wide",
-    page_icon="🧪",
+    page_icon="",
     initial_sidebar_state="expanded",
 )
 
@@ -66,7 +66,7 @@ st.markdown(
 )
 
 # =========================
-# FUNGSI KIMIA (sama seperti sebelumnya, disingkat)
+# FUNGSI KIMIA
 # =========================
 def hitung_kw(temp_c: float) -> float:
     return 10 ** (-14 + 0.031 * (temp_c - 25))
@@ -91,13 +91,17 @@ def hitung_asam_kuat_basa_kuat(type_, c0, v0_liter, c_add, v_add_ml, Kw):
         elif sisa_basa > 0:
             status = "Kelebihan basa (larutan bersifat basa)"
             C_b = sisa_basa / Vt
-            a = 1.0; b = C_b; c = -Kw
+            a = 1.0
+            b = C_b
+            c = -Kw
             H = (-b + math.sqrt(b * b - 4 * a * c)) / (2 * a)
             H = max(H, 1e-14)
         else:
             status = "Kelebihan asam (larutan bersifat asam)"
             C_a = (-sisa_basa) / Vt
-            a = 1.0; b = C_a; c = -Kw
+            a = 1.0
+            b = C_a
+            c = -Kw
             H = (-b + math.sqrt(b * b - 4 * a * c)) / (2 * a)
             H = max(H, 1e-14)
         return pH_dari_H(H), status
@@ -111,13 +115,17 @@ def hitung_asam_kuat_basa_kuat(type_, c0, v0_liter, c_add, v_add_ml, Kw):
         elif sisa_asam > 0:
             status = "Kelebihan asam (larutan bersifat asam)"
             C_a = sisa_asam / Vt
-            a = 1.0; b = C_a; c = -Kw
+            a = 1.0
+            b = C_a
+            c = -Kw
             H = (-b + math.sqrt(b * b - 4 * a * c)) / (2 * a)
             H = max(H, 1e-14)
         else:
             status = "Kelebihan basa (larutan bersifat basa)"
             C_b = (-sisa_asam) / Vt
-            a = 1.0; b = C_b; c = -Kw
+            a = 1.0
+            b = C_b
+            c = -Kw
             H = (-b + math.sqrt(b * b - 4 * a * c)) / (2 * a)
             H = max(H, 1e-14)
         return pH_dari_H(H), status
@@ -192,15 +200,15 @@ def hitung_kompleksometri(c0, v0_liter, c_add, v_add_ml, Kf=10**10.7):
         if abs(n_EDTA - n_Ca) < 1e-12:
             C_Ca_total = n_Ca / Vt
             Ca = math.sqrt(C_Ca_total / Kf)
-            status = "Titik ekuivalen (semua Ca²⁺ terikat EDTA)"
+            status = "Titik ekuivalen (semua Ca2+ terikat EDTA)"
         else:
             C_EDTA_lebih = (n_EDTA - n_Ca) / Vt
             Ca = (n_Ca / Vt) / (Kf * C_EDTA_lebih)
-            status = "Kelebihan EDTA (tidak ada ion Ca²⁺ bebas)"
+            status = "Kelebihan EDTA (tidak ada ion Ca2+ bebas)"
     else:
         sisa_Ca = (n_Ca - n_EDTA) / Vt
         Ca = sisa_Ca
-        status = "Kelebihan ion kalsium (Ca²⁺ bebas)"
+        status = "Kelebihan ion kalsium (Ca2+ bebas)"
     Ca = max(Ca, 1e-14)
     pCa = -math.log10(Ca)
     return pCa, status
@@ -213,14 +221,14 @@ def hitung_permanganometri(c0, v0_liter, c_add, v_add_ml, E0_Fe3_Fe2=0.77, E0_Mn
     n_Fe2_sisa = n_Fe2 - 5 * n_MnO4
     if abs(n_Fe2_sisa) < 1e-12:
         E = (5 * E0_MnO4_Mn2 + 1 * E0_Fe3_Fe2) / 6
-        status = "Titik ekuivalen (semua Fe²⁺ teroksidasi)"
+        status = "Titik ekuivalen (semua Fe2+ teroksidasi)"
     elif n_Fe2_sisa > 0:
         n_Fe3_terbentuk = 5 * n_MnO4
         if n_Fe3_terbentuk <= 0:
             E = E0_Fe3_Fe2
         else:
             E = E0_Fe3_Fe2 + 0.0591 * math.log10(n_Fe3_terbentuk / n_Fe2_sisa)
-        status = "Kelebihan besi(II) (Fe²⁺)"
+        status = "Kelebihan besi(II) (Fe2+)"
     else:
         n_MnO4_sisa = -n_Fe2_sisa / 5
         n_Mn2_terbentuk = n_Fe2 / 5
@@ -287,13 +295,13 @@ def get_permanganometri_color(E, status):
 
 def get_indicator_recommendation(jenis_titrasi):
     rec = {
-        "HCl_NaOH": "✅ Rekomendasi: Phenolphthalein atau Bromothymol Blue.",
-        "NaOH_HCl": "✅ Rekomendasi: Phenolphthalein atau Bromothymol Blue.",
-        "CH3COOH_NaOH": "✅ Rekomendasi: Phenolphthalein.",
-        "NaOH_AsamOksalat": "✅ Rekomendasi: Phenolphthalein.",
-        "HCl_Boraks": "✅ Rekomendasi: Methyl Orange atau Methyl Red.",
-        "Kompleksometri_EDTA_Ca": "🔬 Indikator khusus: Eriochrome Black T (EBT).",
-        "Permanganometri_Fe": "🔬 Autoindikator: KMnO₄ sendiri (ungu)."
+        "HCl_NaOH": "Rekomendasi: Phenolphthalein atau Bromothymol Blue.",
+        "NaOH_HCl": "Rekomendasi: Phenolphthalein atau Bromothymol Blue.",
+        "CH3COOH_NaOH": "Rekomendasi: Phenolphthalein.",
+        "NaOH_AsamOksalat": "Rekomendasi: Phenolphthalein.",
+        "HCl_Boraks": "Rekomendasi: Methyl Orange atau Methyl Red.",
+        "Kompleksometri_EDTA_Ca": "Indikator khusus: Eriochrome Black T (EBT).",
+        "Permanganometri_Fe": "Autoindikator: KMnO4 itu sendiri (ungu)."
     }
     return rec.get(jenis_titrasi, "")
 
@@ -425,12 +433,12 @@ for key, default_val in defaults.items():
 # =========================
 # UI SIDEBAR
 # =========================
-st.title("🧪 Simulator Titrasi Interaktif")
-st.markdown("Belajar titrasi asam-basa, kompleksometri, dan permanganometri dengan mudah!")
+st.title("Simulator Titrasi Interaktif")
+st.markdown("Belajar titrasi asam-basa, kompleksometri, dan permanganometri dengan mudah.")
 
 with st.sidebar:
-    st.header("⚙️ Pengaturan Percobaan")
-    with st.expander("📖 Panduan Cepat", expanded=False):
+    st.header("Pengaturan Percobaan")
+    with st.expander("Panduan Cepat", expanded=False):
         st.markdown("""
         **Apa itu titrasi?**  
         Titrasi adalah proses menambahkan larutan penitrasi ke larutan yang dititrasi hingga reaksi selesai (titik ekuivalen).  
@@ -450,49 +458,60 @@ with st.sidebar:
         """)
     st.markdown("---")
     
-    # ===== INI DITAMBAHKAN: Pilihan Jenis Titrasi =====
-    st.subheader("🔬 Jenis Titrasi")
+    # Menu pemilihan jenis titrasi (yang sebelumnya hilang, sekarang dikembalikan)
+    st.subheader("Jenis Titrasi")
     st.selectbox(
-        "Pilih percobaan",
-        options=["HCl_NaOH", "NaOH_HCl", "CH3COOH_NaOH", "NaOH_AsamOksalat", "HCl_Boraks", "Kompleksometri_EDTA_Ca", "Permanganometri_Fe"],
+        "Pilih jenis titrasi",
+        options=[
+            "HCl_NaOH",
+            "NaOH_HCl",
+            "CH3COOH_NaOH",
+            "NaOH_AsamOksalat",
+            "HCl_Boraks",
+            "Kompleksometri_EDTA_Ca",
+            "Permanganometri_Fe"
+        ],
         format_func=lambda x: {
-            "HCl_NaOH": "Asam Kuat + Basa Kuat (HCl + NaOH)",
-            "NaOH_HCl": "Basa Kuat + Asam Kuat (NaOH + HCl)",
-            "CH3COOH_NaOH": "Asam Lemah + Basa Kuat (CH₃COOH + NaOH)",
-            "NaOH_AsamOksalat": "Basa Kuat + Asam Oksalat (NaOH + H₂C₂O₄)",
-            "HCl_Boraks": "Asam Kuat + Boraks (HCl + Na₂B₄O₇)",
-            "Kompleksometri_EDTA_Ca": "Kompleksometri: EDTA vs Ca²⁺",
-            "Permanganometri_Fe": "Permanganometri: KMnO₄ vs Fe²⁺"
+            "HCl_NaOH": "Asam Kuat (HCl) + Basa Kuat (NaOH)",
+            "NaOH_HCl": "Basa Kuat (NaOH) + Asam Kuat (HCl)",
+            "CH3COOH_NaOH": "Asam Lemah (CH3COOH) + Basa Kuat (NaOH)",
+            "NaOH_AsamOksalat": "Basa Kuat (NaOH) + Asam Oksalat (H2C2O4)",
+            "HCl_Boraks": "Asam Kuat (HCl) + Boraks (Na2B4O7)",
+            "Kompleksometri_EDTA_Ca": "Kompleksometri: EDTA vs Ca2+ (pCa)",
+            "Permanganometri_Fe": "Permanganometri: KMnO4 vs Fe2+ (potensial)"
         }.get(x, x),
         key="jenis_titrasi",
-        help="Pilih jenis reaksi kimia yang akan disimulasikan."
+        help="Pilih percobaan titrasi yang ingin disimulasikan."
     )
     st.markdown("---")
     
-    st.subheader("🧴 Larutan yang Dititrasi")
+    st.subheader("Larutan yang Dititrasi")
     st.number_input("Konsentrasi (M)", min_value=0.0, value=st.session_state.c0, step=0.01, format="%.4f", key="c0",
                     help="Semakin besar konsentrasi, semakin banyak zat yang perlu dititrasi.")
     st.number_input("Volume (mL)", min_value=1.0, value=st.session_state.v0_ml, step=5.0, format="%.1f", key="v0_ml",
                     help="Volume larutan yang akan dititrasi. Biasanya 50 mL.")
-    st.subheader("💧 Larutan Penitrasi")
+    
+    st.subheader("Larutan Penitrasi")
     st.number_input("Konsentrasi (M)", min_value=0.0, value=st.session_state.c_add, step=0.01, format="%.4f", key="c_add",
                     help="Larutan yang ditambahkan dari buret.")
     st.number_input("Volume Buret (mL)", min_value=10, max_value=500, value=st.session_state.v_max, step=10, key="v_max",
                     help="Kapasitas maksimum buret. Pastikan cukup untuk mencapai titik ekuivalen.")
-    st.subheader("🌡️ Kondisi Percobaan")
-    st.number_input("Suhu (°C)", min_value=0.0, max_value=50.0, value=st.session_state.temp_c, step=1.0, key="temp_c",
-                    help="Suhu mempengaruhi nilai pH netral. Gunakan 25°C untuk kondisi standar.")
+    
+    st.subheader("Kondisi Percobaan")
+    st.number_input("Suhu (C)", min_value=0.0, max_value=50.0, value=st.session_state.temp_c, step=1.0, key="temp_c",
+                    help="Suhu mempengaruhi nilai pH netral. Gunakan 25C untuk kondisi standar.")
+    
     if st.session_state.c_add <= 0:
-        st.warning("⚠️ Konsentrasi penitrasi harus > 0 untuk memulai titrasi. Masukkan nilai positif.")
+        st.warning("Konsentrasi penitrasi harus > 0 untuk memulai titrasi. Masukkan nilai positif.")
         st.session_state.v_add = 0.0
         disabled_add = True
     else:
         disabled_add = False
-        st.number_input("Volume Ditambahkan (mL)", min_value=0.0, max_value=float(st.session_state.v_max), 
+        st.number_input("Volume Ditambahkan (mL)", min_value=0.0, max_value=float(st.session_state.v_max),
                         value=st.session_state.v_add, step=1.0, format="%.1f", key="v_add",
-                        help="Jumlah penitrasi yang sudah ditambahkan. Geser atau ketik angka.", disabled=disabled_add)
+                        help="Jumlah penitrasi yang sudah ditambahkan.", disabled=disabled_add)
     
-    # Parameter khusus berdasarkan jenis titrasi
+    # Parameter khusus
     if st.session_state.jenis_titrasi == "CH3COOH_NaOH":
         st.number_input("pKa Asam Lemah", min_value=0.0, value=st.session_state.pKa, step=0.1, format="%.2f", key="pKa",
                         help="Untuk asam asetat, pKa = 4,76. Semakin kecil pKa, semakin kuat asam.")
@@ -500,20 +519,20 @@ with st.sidebar:
         st.number_input("log Kf (Ca-EDTA)", min_value=0.0, value=st.session_state.logKf, step=0.1, format="%.1f", key="logKf",
                         help="Nilai 10,7 untuk Ca-EDTA. Semakin besar, semakin stabil kompleks.")
     elif st.session_state.jenis_titrasi == "Permanganometri_Fe":
-        st.number_input("E0 Fe³⁺/Fe²⁺ (V)", min_value=0.0, value=st.session_state.E0_Fe, step=0.01, format="%.2f", key="E0_Fe",
+        st.number_input("E0 Fe3+/Fe2+ (V)", min_value=0.0, value=st.session_state.E0_Fe, step=0.01, format="%.2f", key="E0_Fe",
                         help="Potensial standar. Nilai 0,77 V untuk besi.")
-        st.number_input("E0 MnO₄⁻/Mn²⁺ (V)", min_value=0.0, value=st.session_state.E0_Mn, step=0.01, format="%.2f", key="E0_Mn",
+        st.number_input("E0 MnO4-/Mn2+ (V)", min_value=0.0, value=st.session_state.E0_Mn, step=0.01, format="%.2f", key="E0_Mn",
                         help="Potensial standar permanganat. Nilai 1,51 V.")
     
     # Indikator
     if st.session_state.jenis_titrasi in ["HCl_NaOH", "NaOH_HCl", "CH3COOH_NaOH", "NaOH_AsamOksalat", "HCl_Boraks"]:
-        st.subheader("🌈 Indikator pH")
+        st.subheader("Indikator pH")
         st.selectbox("Pilih indikator",
                      options=["Phenolphthalein", "Methyl Orange", "Bromothymol Blue"],
                      format_func=lambda x: {
-                         "Phenolphthalein": "Phenolphthalein (berubah pada pH 8,2-10 → pink)",
-                         "Methyl Orange": "Methyl Orange (berubah pada pH 3,1-4,4 → merah ke kuning)",
-                         "Bromothymol Blue": "Bromothymol Blue (berubah pada pH 6,0-7,6 → kuning ke biru)",
+                         "Phenolphthalein": "Phenolphthalein (berubah pada pH 8,2-10 -> pink)",
+                         "Methyl Orange": "Methyl Orange (berubah pada pH 3,1-4,4 -> merah ke kuning)",
+                         "Bromothymol Blue": "Bromothymol Blue (berubah pada pH 6,0-7,6 -> kuning ke biru)",
                      }.get(x, x),
                      key="indicator_select", help="Pilih indikator untuk melihat perubahan warna larutan.")
         rec = get_indicator_recommendation(st.session_state.jenis_titrasi)
@@ -522,13 +541,13 @@ with st.sidebar:
         rec = get_indicator_recommendation(st.session_state.jenis_titrasi)
         st.markdown(f'<div class="recommendation-box">{rec}</div>', unsafe_allow_html=True)
     
-    if st.button("🔄 Reset ke Default", use_container_width=True):
+    if st.button("Reset ke Default", use_container_width=True):
         for key, val in defaults.items():
             st.query_params[key] = str(val)
         st.rerun()
 
 # =========================
-# AMBIL NILAI TERBARU DARI SESSION STATE
+# AMBIL NILAI DARI SESSION STATE
 # =========================
 jenis_titrasi = st.session_state.jenis_titrasi
 c0 = st.session_state.c0
@@ -564,9 +583,9 @@ nilai, status, satuan = hitung_nilai(params)
 Ve = (c0 * (v0_ml / 1000) / c_add) * 1000 if c_add > 0 else 0
 
 if c_add > 0 and Ve > v_max:
-    st.sidebar.warning(f"⚠️ Titik ekuivalen teoritis terjadi pada {Ve:.1f} mL, melebihi volume buret ({v_max} mL). Naikkan 'Volume Buret' agar kurva lengkap.")
+    st.sidebar.warning(f"Titik ekuivalen teoritis terjadi pada {Ve:.1f} mL, melebihi volume buret ({v_max} mL). Naikkan 'Volume Buret' agar kurva lengkap.")
 elif c_add > 0:
-    st.sidebar.success(f"📌 Titik ekuivalen diperkirakan pada {Ve:.2f} mL.")
+    st.sidebar.success(f"Titik ekuivalen diperkirakan pada {Ve:.2f} mL.")
 
 # Tentukan warna larutan
 if jenis_titrasi in ["HCl_NaOH", "NaOH_HCl", "CH3COOH_NaOH", "NaOH_AsamOksalat", "HCl_Boraks"] and indicator is not None:
@@ -578,22 +597,22 @@ elif jenis_titrasi == "Kompleksometri_EDTA_Ca":
     with st.sidebar:
         st.markdown("""
         <div class="legend-box">
-        <b>🎨 Perubahan warna indikator EBT:</b><br>
-        🔴 Merah anggur → Kelebihan Ca²⁺<br>
-        🔵 Biru medium → Titik ekuivalen<br>
-        💙 Biru terang → Kelebihan EDTA
+        <b>Perubahan warna indikator EBT:</b><br>
+        Merah anggur -> Kelebihan Ca2+<br>
+        Biru medium -> Titik ekuivalen<br>
+        Biru terang -> Kelebihan EDTA
         </div>
         """, unsafe_allow_html=True)
 elif jenis_titrasi == "Permanganometri_Fe":
     solution_color = get_permanganometri_color(nilai, status)
-    info_indicator = " | Autoindikator KMnO₄"
+    info_indicator = " | Autoindikator KMnO4"
     with st.sidebar:
         st.markdown("""
         <div class="legend-box">
-        <b>🎨 Perubahan warna larutan:</b><br>
-        🟣 Ungu → Kelebihan KMnO₄<br>
-        🟡 Kuning pucat → Kelebihan Fe²⁺ (warna Fe³⁺)<br>
-        🩷 Merah muda pucat → Titik ekuivalen
+        <b>Perubahan warna larutan:</b><br>
+        Ungu -> Kelebihan KMnO4<br>
+        Kuning pucat -> Kelebihan Fe2+ (warna Fe3+)<br>
+        Merah muda pucat -> Titik ekuivalen
         </div>
         """, unsafe_allow_html=True)
 else:
@@ -603,7 +622,7 @@ else:
 # Layout utama
 left, right = st.columns([1, 2])
 with left:
-    st.subheader("🧪 Larutan dalam Labu")
+    st.subheader("Larutan dalam Labu")
     st.markdown(
         f"""
         <div style="width:220px; height:340px; border:2px solid #cccccc; border-radius:10px; margin:auto; 
@@ -623,7 +642,7 @@ with left:
         if satuan == "pH":
             st.metric("Tingkat Keasaman (pH)", f"{nilai:.2f}", help="pH < 7 = asam, pH = 7 netral, pH > 7 = basa")
         elif satuan == "pCa":
-            st.metric("pCa", f"{nilai:.2f}", help="pCa = -log[Ca²⁺]. Semakin besar pCa, semakin sedikit ion kalsium bebas.")
+            st.metric("pCa", f"{nilai:.2f}", help="pCa = -log[Ca2+]. Semakin besar pCa, semakin sedikit ion kalsium bebas.")
         else:
             st.metric("Potensial (V)", f"{nilai:.3f} V", help="Potensial listrik larutan. Semakin tinggi, semakin kuat sifat oksidator.")
         st.metric("Titik Ekuivalen", f"{Ve:.2f} mL", help="Volume penitrasi yang dibutuhkan agar reaksi tepat habis.")
@@ -668,22 +687,22 @@ fig.update_layout(
     xaxis=dict(gridcolor="lightgray"),
 )
 with right:
-    st.subheader("📈 Kurva Titrasi")
+    st.subheader("Kurva Titrasi")
     st.plotly_chart(fig, use_container_width=True)
     st.caption("Grafik menunjukkan perubahan sifat larutan seiring penambahan penitrasi. Titik merah menunjukkan posisi saat ini.")
 
 # Ekspor data
-st.subheader("📥 Simpan Data Kurva")
+st.subheader("Simpan Data Kurva")
 export_df = pd.DataFrame({
     "Volume Penitrasi (mL)": vs,
     f"({satuan})": phs
 })
 st.dataframe(export_df.round(3), use_container_width=True, height=200)
 csv = export_df.to_csv(index=False).encode('utf-8')
-st.download_button(label="📥 Unduh CSV", data=csv, file_name=f"kurva_titrasi_{jenis_titrasi}.csv", mime="text/csv", help="Simpan data ke file CSV untuk analisis lanjutan.")
+st.download_button(label="Unduh CSV", data=csv, file_name=f"kurva_titrasi_{jenis_titrasi}.csv", mime="text/csv", help="Simpan data ke file CSV untuk analisis lanjutan.")
 
 # Reaksi kimia
-st.subheader("⚗️ Reaksi yang Terjadi")
+st.subheader("Reaksi yang Terjadi")
 if jenis_titrasi == "HCl_NaOH":
     st.latex(r"HCl + NaOH \rightarrow NaCl + H_2O")
     st.markdown("Asam klorida (HCl) bereaksi dengan natrium hidroksida (NaOH) menghasilkan garam dapur (NaCl) dan air. Titik ekuivalen terjadi pada pH 7.")
@@ -701,13 +720,13 @@ elif jenis_titrasi == "HCl_Boraks":
     st.markdown("Boraks (garam) bereaksi dengan HCl menghasilkan asam borat (asam lemah) dan garam. Titik ekuivalen bersifat asam lemah (pH sekitar 5).")
 elif jenis_titrasi == "Kompleksometri_EDTA_Ca":
     st.latex(r"Ca^{2+} + Y^{4-} \rightarrow CaY^{2-}")
-    st.markdown("Ion kalsium (Ca²⁺) membentuk kompleks stabil dengan EDTA. Indikator EBT berubah dari merah ke biru saat semua Ca²⁺ terikat.")
+    st.markdown("Ion kalsium (Ca2+) membentuk kompleks stabil dengan EDTA. Indikator EBT berubah dari merah ke biru saat semua Ca2+ terikat.")
 elif jenis_titrasi == "Permanganometri_Fe":
     st.latex(r"MnO_4^- + 5Fe^{2+} + 8H^+ \rightarrow Mn^{2+} + 5Fe^{3+} + 4H_2O")
     st.markdown("Permanganat (ungu) mengoksidasi besi(II) menjadi besi(III). Kelebihan permanganat memberikan warna ungu pada titik akhir.")
 
 # Panduan lengkap
-with st.expander("📘 Penjelasan Lengkap untuk Pemula", expanded=False):
+with st.expander("Penjelasan Lengkap untuk Pemula", expanded=False):
     st.markdown("""
     ### Apa itu titrasi?
     Titrasi adalah teknik di laboratorium untuk menentukan kadar suatu zat. Caranya: meneteskan larutan yang sudah diketahui konsentrasinya (penitrasi) ke dalam larutan yang ingin diukur (dititrasi) sampai reaksi selesai.
@@ -730,7 +749,7 @@ with st.expander("📘 Penjelasan Lengkap untuk Pemula", expanded=False):
     - Ganti indikator untuk melihat perubahan warna yang sesuai.
     - Jika kurva tidak menunjukkan lonjakan, naikkan volume maksimum buret.
     
-    Selamat belajar! 🧪
+    Selamat belajar!
     """)
 
 st.caption("Simulator Titrasi Interaktif - Didesain untuk pembelajaran kimia yang mudah dipahami.")
