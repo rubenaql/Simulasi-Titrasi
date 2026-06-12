@@ -11,7 +11,7 @@ import streamlit as st
 st.set_page_config(
     page_title="Simulator Titrasi",
     layout="wide",
-    page_icon="🧪",
+    page_icon="",
     initial_sidebar_state="expanded",
 )
 
@@ -304,7 +304,7 @@ def get_rgb_background(color_hex):
 # UI
 # =========================
 
-st.title("🧪 Simulator Titrasi Interaktif")
+st.title("Simulator Titrasi Interaktif")
 
 st.markdown(
     """
@@ -318,7 +318,7 @@ Fitur: Asam kuat vs basa kuat | Asam lemah vs basa kuat | Kurva pH | Simulasi wa
 # =========================
 
 with st.sidebar:
-    st.header("⚙️ Pengaturan Titrasi")
+    st.header("Pengaturan Titrasi")
     
     st.subheader("Jenis Titrasi")
     type_ = st.selectbox(
@@ -338,7 +338,7 @@ with st.sidebar:
     
     st.markdown("---")
     
-    st.subheader("🧴 Larutan Analit")
+    st.subheader("Larutan Analit")
     c0 = st.number_input(
         "Konsentrasi (M)", 
         min_value=0.0, 
@@ -356,7 +356,7 @@ with st.sidebar:
         help="Volume larutan analit (minimal 0.001 L)"
     )
     
-    st.subheader("💧 Larutan Titran")
+    st.subheader("Larutan Titran")
     c_add = st.number_input(
         "Konsentrasi (M)", 
         min_value=0.0, 
@@ -373,9 +373,9 @@ with st.sidebar:
         help="Batas atas volume titran yang disimulasikan"
     )
     
-    st.subheader("🌡️ Parameter Tambahan")
+    st.subheader("Parameter Tambahan")
     temp_c = st.slider(
-        "Suhu (°C)", 
+        "Suhu (C)", 
         min_value=20.0, 
         max_value=30.0, 
         value=25.0,
@@ -398,14 +398,14 @@ with st.sidebar:
             value=4.76, 
             step=0.1, 
             format="%.2f",
-            help="Nilai pKa asam asetat adalah 4,76 pada 25°C"
+            help="Nilai pKa asam asetat adalah 4,76 pada 25C"
         )
     else:
         pKa = 4.76
     
     st.markdown("---")
     
-    st.subheader("🎨 Indikator pH")
+    st.subheader("Indikator pH")
     indicator = st.selectbox(
         "Pilih indikator untuk simulasi warna:",
         options=[
@@ -423,12 +423,12 @@ with st.sidebar:
     
     st.markdown("---")
     
-    st.subheader("📊 Informasi Cepat")
+    st.subheader("Informasi Cepat")
     if c_add > 0:
         ve_calc = (c0 * v0 / c_add) * 1000
         st.metric("Volume Ekuivalen (teoritis)", f"{ve_calc:.2f} mL")
     else:
-        st.warning("⚠️ Konsentrasi titran nol, tidak dapat menghitung volume ekuivalen.")
+        st.warning("Konsentrasi titran nol, tidak dapat menghitung volume ekuivalen.")
     
     if type_ == "HCl_NaOH":
         rec_ind = "Bromothymol Blue atau Phenolphthalein"
@@ -436,9 +436,9 @@ with st.sidebar:
         rec_ind = "Phenolphthalein"
     else:
         rec_ind = "Methyl Orange"
-    st.info(f"💡 Indikator yang disarankan: {rec_ind}")
+    st.info(f"Indikator yang disarankan: {rec_ind}")
     
-    st.caption("🔄 Geser slider dan amati perubahan pH serta warna larutan.")
+    st.caption("Geser slider dan amati perubahan pH serta warna larutan.")
 
 # =========================
 # PARAMETER OBJEK
@@ -474,7 +474,7 @@ solution_color = get_indicator_color(pH, indicator)
 left, right = st.columns([1, 2])
 
 with left:
-    st.subheader("🧪 Larutan")
+    st.subheader("Larutan")
     
     # Menampilkan larutan dengan warna yang sesuai
     st.markdown(
@@ -490,16 +490,16 @@ with left:
     
     col1, col2 = st.columns(2)
     with col1:
-        st.metric("📊 pH", f"{pH:.2f}")
-        st.metric("⚖️ Volume Ekuivalen", f"{Ve:.2f} mL")
-        st.metric("🌡️ Suhu", f"{temp_c:.1f} °C")
+        st.metric("pH", f"{pH:.2f}")
+        st.metric("Volume Ekuivalen", f"{Ve:.2f} mL")
+        st.metric("Suhu", f"{temp_c:.1f} C")
     with col2:
-        st.metric("📝 Status", status)
-        st.metric("💧 Volume Ditambahkan", f"{v_add_ml:.1f} mL")
-        st.metric("🔬 Kw", f"{Kw:.2e}")
+        st.metric("Status", status)
+        st.metric("Volume Ditambahkan", f"{v_add_ml:.1f} mL")
+        st.metric("Kw", f"{Kw:.2e}")
     
     # Menampilkan keterangan warna indikator
-    with st.expander("🎨 Keterangan Warna Indikator"):
+    with st.expander("Keterangan Warna Indikator"):
         if indicator == "Phenolphthalein":
             st.markdown("""
             - **pH < 8.2**: Tidak berwarna (bening)
@@ -566,50 +566,50 @@ fig.update_layout(
 )
 
 with right:
-    st.subheader("📈 Kurva Titrasi")
+    st.subheader("Kurva Titrasi")
     st.plotly_chart(fig, use_container_width=True)
 
 # =========================
 # REAKSI DAN PERHITUNGAN
 # =========================
 
-st.subheader("⚗️ Reaksi Kimia")
+st.subheader("Reaksi Kimia")
 if type_ == "HCl_NaOH":
     st.latex(r"HCl + NaOH \rightarrow NaCl + H_2O")
-    st.markdown("**Asam Kuat + Basa Kuat → Garam + Air**")
+    st.markdown("**Asam Kuat + Basa Kuat -> Garam + Air**")
 elif type_ == "NaOH_HCl":
     st.latex(r"NaOH + HCl \rightarrow NaCl + H_2O")
-    st.markdown("**Basa Kuat + Asam Kuat → Garam + Air**")
+    st.markdown("**Basa Kuat + Asam Kuat -> Garam + Air**")
 else:
     st.latex(r"CH_3COOH + NaOH \rightarrow CH_3COONa + H_2O")
-    st.markdown("**Asam Lemah + Basa Kuat → Garam + Air**")
+    st.markdown("**Asam Lemah + Basa Kuat -> Garam + Air**")
     st.latex(r"pH = pK_a + \log\frac{[A^-]}{[HA]} \quad \text{(Persamaan Henderson-Hasselbalch)}")
 
-st.subheader("📝 Perhitungan")
-with st.expander("🔍 Lihat Langkah Perhitungan"):
+st.subheader("Perhitungan")
+with st.expander("Lihat Langkah Perhitungan"):
     mol_awal = c0 * v0
     mol_titran = c_add * (v_add_ml / 1000)
-    st.write(f"**Mol analit awal** = {c0:.4f} M × {v0:.4f} L = {mol_awal:.6f} mol")
-    st.write(f"**Mol titran** = {c_add:.4f} M × {v_add_ml/1000:.4f} L = {mol_titran:.6f} mol")
+    st.write(f"**Mol analit awal** = {c0:.4f} M x {v0:.4f} L = {mol_awal:.6f} mol")
+    st.write(f"**Mol titran** = {c_add:.4f} M x {v_add_ml/1000:.4f} L = {mol_titran:.6f} mol")
     
     if type_ in ["HCl_NaOH", "CH3COOH_NaOH"]:
         if mol_awal > mol_titran + 1e-12:
             sisa = mol_awal - mol_titran
-            st.write(f"✅ **Sisa analit** = {sisa:.6f} mol")
+            st.write(f"**Sisa analit** = {sisa:.6f} mol")
         elif mol_titran > mol_awal + 1e-12:
             kelebihan = mol_titran - mol_awal
-            st.write(f"⚠️ **Kelebihan titran** = {kelebihan:.6f} mol")
+            st.write(f"**Kelebihan titran** = {kelebihan:.6f} mol")
         else:
-            st.success("🎯 **Titik ekuivalen tercapai!**")
+            st.success("**Titik ekuivalen tercapai!**")
     else:
         if mol_awal > mol_titran + 1e-12:
             sisa = mol_awal - mol_titran
-            st.write(f"✅ **Sisa basa** = {sisa:.6f} mol")
+            st.write(f"**Sisa basa** = {sisa:.6f} mol")
         elif mol_titran > mol_awal + 1e-12:
             kelebihan = mol_titran - mol_awal
-            st.write(f"⚠️ **Kelebihan asam** = {kelebihan:.6f} mol")
+            st.write(f"**Kelebihan asam** = {kelebihan:.6f} mol")
         else:
-            st.success("🎯 **Titik ekuivalen tercapai!**")
+            st.success("**Titik ekuivalen tercapai!**")
     
     st.write(f"**pH terukur** = {pH:.4f}")
     st.write(f"**Status** = {status}")
@@ -618,13 +618,13 @@ with st.expander("🔍 Lihat Langkah Perhitungan"):
 # EKSPOR DATA
 # =========================
 
-st.subheader("💾 Ekspor Data")
+st.subheader("Ekspor Data")
 export_df = pd.DataFrame({"Volume_mL": vs, "pH": phs})
-with st.expander("📊 Tabel Data Kurva"):
+with st.expander("Tabel Data Kurva"):
     st.dataframe(export_df.round(3), use_container_width=True, height=300)
 csv = export_df.to_csv(index=False)
 st.download_button(
-    label="📥 Unduh CSV", 
+    label="Unduh CSV", 
     data=csv, 
     file_name=f"titration_curve_{type_}.csv", 
     mime="text/csv"
@@ -634,7 +634,7 @@ st.download_button(
 # TITRASI OTOMATIS
 # =========================
 
-st.subheader("🤖 Titrasi Otomatis")
+st.subheader("Titrasi Otomatis")
 col1, col2 = st.columns([1, 3])
 with col1:
     auto_speed = st.select_slider(
@@ -645,7 +645,7 @@ with col1:
     speed_map = {"Lambat": 0.15, "Normal": 0.08, "Cepat": 0.03}
     delay = speed_map[auto_speed]
     
-if st.button("▶️ Mulai Simulasi Otomatis", type="primary"):
+if st.button("Mulai Simulasi Otomatis", type="primary"):
     progress = st.progress(0)
     status_text = st.empty()
     chart_placeholder = st.empty()
@@ -691,7 +691,7 @@ if st.button("▶️ Mulai Simulasi Otomatis", type="primary"):
         status_text.info(f"Volume: {vol:.1f} mL | pH: {temp_ph:.2f} | {temp_status}")
         time.sleep(delay)
     
-    status_text.success("✅ Simulasi selesai!")
+    status_text.success("Simulasi selesai!")
     time.sleep(1)
     status_text.empty()
 
@@ -700,14 +700,14 @@ if st.button("▶️ Mulai Simulasi Otomatis", type="primary"):
 # =========================
 
 st.divider()
-st.subheader("📋 Ringkasan")
+st.subheader("Ringkasan")
 ringkasan = pd.DataFrame(
     {
-        "Parameter": ["pH", "Status", "Volume Ekuivalen (mL)", "Indikator", "Suhu (°C)", "Kw"],
+        "Parameter": ["pH", "Status", "Volume Ekuivalen (mL)", "Indikator", "Suhu (C)", "Kw"],
         "Nilai": [round(pH, 2), status, f"{Ve:.2f}", rec_ind, f"{temp_c:.1f}", f"{Kw:.2e}"],
     }
 )
 st.table(ringkasan)
 
 st.markdown("---")
-st.caption("🧪 **Courtesy Of Kelompok 3 LPK** | Simulator Titrasi Interaktif v2.0")
+st.caption("Courtesy Of Kelompok 3 LPK | Simulator Titrasi Interaktif v2.0")
