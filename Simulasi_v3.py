@@ -259,19 +259,20 @@ with st.sidebar:
             "NaOH_HCl": "Basa Kuat (NaOH) + Asam Kuat (HCl)",
             "CH3COOH_NaOH": "Asam Lemah (CH3COOH) + Basa Kuat (NaOH)",
         }.get(x, x),
+        key="jenis_titrasi"
     )
     st.markdown("---")
     st.subheader("Larutan Analit")
-    c0 = st.number_input("Konsentrasi (M)", min_value=0.0, value=0.1, step=0.01, format="%.4f")
-    v0 = st.number_input("Volume (L)", min_value=0.001, value=0.05, step=0.01, format="%.4f")
+    c0 = st.number_input("Konsentrasi (M)", min_value=0.0, value=0.1, step=0.01, format="%.4f", key="c0")
+    v0 = st.number_input("Volume (L)", min_value=0.001, value=0.05, step=0.01, format="%.4f", key="v0")
     st.subheader("Larutan Titran")
-    c_add = st.number_input("Konsentrasi (M)", min_value=0.0, value=0.1, step=0.01, format="%.4f")
-    v_max = st.slider("Volume Maksimum (mL)", min_value=10, max_value=100, value=50)
+    c_add = st.number_input("Konsentrasi (M)", min_value=0.0, value=0.1, step=0.01, format="%.4f", key="c_add")
+    v_max = st.slider("Volume Maksimum (mL)", min_value=10, max_value=100, value=50, key="v_max_slider")
     st.subheader("Parameter Tambahan")
-    temp_c = st.slider("Suhu (C)", min_value=20.0, max_value=30.0, value=25.0, step=0.5)
-    v_add_ml = st.slider("Volume Ditambahkan (mL)", min_value=0, max_value=int(v_max), value=0, step=1)
+    temp_c = st.slider("Suhu (C)", min_value=20.0, max_value=30.0, value=25.0, step=0.5, key="temp_c_slider")
+    v_add_ml = st.slider("Volume Ditambahkan (mL)", min_value=0, max_value=int(v_max), value=0, step=1, key="v_add_slider")
     if type_ == "CH3COOH_NaOH":
-        pKa = st.number_input("pKa Asam Lemah", min_value=0.0, value=4.76, step=0.1, format="%.2f")
+        pKa = st.number_input("pKa Asam Lemah", min_value=0.0, value=4.76, step=0.1, format="%.2f", key="pKa")
     else:
         pKa = 4.76
     st.markdown("---")
@@ -284,6 +285,7 @@ with st.sidebar:
             "Methyl Orange": "Methyl Orange (3.1-4.4)",
             "Bromothymol Blue": "Bromothymol Blue (6.0-7.6)",
         }.get(x, x),
+        key="indicator_select"
     )
     st.markdown("---")
     st.subheader("Informasi Cepat")
@@ -429,14 +431,14 @@ export_df = pd.DataFrame({"Volume_mL": vs, "pH": phs})
 with st.expander("Tabel Data Kurva"):
     st.dataframe(export_df.round(3), use_container_width=True, height=300)
 csv = export_df.to_csv(index=False)
-st.download_button("Unduh CSV", data=csv, file_name=f"titration_curve_{type_}.csv", mime="text/csv")
+st.download_button("Unduh CSV", data=csv, file_name=f"titration_curve_{type_}.csv", mime="text/csv", key="download_csv")
 
 # Titrasi otomatis
 st.subheader("Titrasi Otomatis")
-auto_speed = st.select_slider("Kecepatan simulasi", options=["Lambat", "Normal", "Cepat"], value="Normal")
+auto_speed = st.select_slider("Kecepatan simulasi", options=["Lambat", "Normal", "Cepat"], value="Normal", key="auto_speed")
 delay = {"Lambat": 0.15, "Normal": 0.08, "Cepat": 0.03}[auto_speed]
 
-if st.button("Mulai Simulasi Otomatis", type="primary"):
+if st.button("Mulai Simulasi Otomatis", type="primary", key="start_auto"):
     progress = st.progress(0)
     status_text = st.empty()
     chart_placeholder = st.empty()
