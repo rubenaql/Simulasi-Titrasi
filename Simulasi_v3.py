@@ -2,6 +2,7 @@ import math
 from dataclasses import dataclass
 
 import numpy as np
+import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
@@ -452,7 +453,6 @@ def reset_to_default():
     st.session_state.E0_Fe = 0.77
     st.session_state.E0_Mn = 1.51
     st.session_state.indicator_select = "Phenolphthalein"
-    # Force rerun
     st.rerun()
 
 # =========================
@@ -512,7 +512,6 @@ with st.sidebar:
         help="Suhu mempengaruhi nilai Kw dan pH netral. Rentang 0-50°C."
     )
     
-    # Peringatan jika konsentrasi titran nol
     if c_add <= 0:
         st.warning("⚠️ Konsentrasi titran harus > 0 untuk melakukan titrasi. Volume ditambahkan dinonaktifkan.")
         v_add_ml = 0.0
@@ -553,7 +552,6 @@ with st.sidebar:
     else:
         E0_Fe, E0_Mn = 0.77, 1.51
 
-    # Indikator dan rekomendasi
     if jenis_titrasi in ["HCl_NaOH", "NaOH_HCl", "CH3COOH_NaOH", "NaOH_AsamOksalat", "HCl_Boraks"]:
         st.subheader("Indikator pH")
         indicator = st.selectbox(
@@ -574,7 +572,6 @@ with st.sidebar:
         rec = get_indicator_recommendation(jenis_titrasi)
         st.markdown(f'<div class="recommendation-box">{rec}</div>', unsafe_allow_html=True)
 
-    # Tombol reset
     if st.button("🔄 Reset ke Default", use_container_width=True):
         reset_to_default()
 
@@ -598,7 +595,6 @@ params = Parameter(
 nilai, status, satuan = hitung_nilai(params)
 Ve = (c0 * (v0_ml / 1000) / c_add) * 1000 if c_add > 0 else 0
 
-# Peringatan jika Ve > v_max
 if c_add > 0 and Ve > v_max:
     st.sidebar.warning(f"⚠️ Volume ekuivalen teoritis ({Ve:.1f} mL) melebihi volume maksimum buret ({v_max} mL). Naikkan 'Volume Buret' untuk melihat titik ekuivalen pada kurva.")
 elif c_add > 0:
@@ -611,14 +607,13 @@ if jenis_titrasi in ["HCl_NaOH", "NaOH_HCl", "CH3COOH_NaOH", "NaOH_AsamOksalat",
 elif jenis_titrasi == "Kompleksometri_EDTA_Ca":
     solution_color = get_kompleksometri_color(nilai, status)
     info_indicator = " | Indikator EBT"
-    # Tambahkan legenda warna di sidebar
     with st.sidebar:
         st.markdown("""
         <div class="legend-box">
         <b>🎨 Legenda warna EBT:</b><br>
         🔴 Merah anggur → Kelebihan Ca²⁺<br>
-    🔵 Biru medium → Titik ekuivalen<br>
-    💙 Biru terang → Kelebihan EDTA
+        🔵 Biru medium → Titik ekuivalen<br>
+        💙 Biru terang → Kelebihan EDTA
         </div>
         """, unsafe_allow_html=True)
 elif jenis_titrasi == "Permanganometri_Fe":
@@ -637,7 +632,6 @@ else:
     solution_color = "#f0f0f0"
     info_indicator = ""
 
-# Layout utama
 left, right = st.columns([1, 2])
 with left:
     st.subheader("Larutan")
@@ -721,7 +715,28 @@ with right:
     st.subheader("Kurva Titrasi")
     st.plotly_chart(fig, use_container_width=True)
 
-# Reaksi kimia sederhana
+# =========================
+# EKSPOR DATA CSV
+# =========================
+st.subheader("📥 Ekspor Data")
+# Buat DataFrame dari data kurva
+export_df = pd.DataFrame({
+    "Volume (mL)": vs,
+    f"{satuan.upper()}": phs
+})
+st.dataframe(export_df.round(3), use_container_width=True, height=200)
+csv = export_df.to_csv(index=False).encode('utf-8')
+st.download_button(
+    label="📥 Unduh CSV",
+    data=csv,
+    file_name=f"kurva_titrasi_{jenis_titrasi}.csv",
+    mime="text/csv",
+    help="Simpan data kurva titrasi dalam format CSV"
+)
+
+# =========================
+# REAKSI KIMIA
+# =========================
 st.subheader("Reaksi Kimia")
 if jenis_titrasi == "HCl_NaOH":
     st.latex(r"HCl + NaOH \rightarrow NaCl + H_2O")
@@ -753,6 +768,7 @@ with st.expander("📘 Panduan Lengkap & Cara Penggunaan", expanded=False):
     4. **Masukkan volume titran yang ditambahkan** untuk melihat pH/pCa/potensial saat itu.
     5. **Pilih indikator** (untuk titrasi asam-basa) dan amati perubahan warna wadah larutan.
     6. **Gunakan tombol reset** untuk mengembalikan semua nilai ke default.
+    7. **Unduh data kurva** dalam format CSV untuk analisis lebih lanjut.
     
     ### Rumus yang Digunakan
     - **Asam kuat + basa kuat**: pH dihitung dari kelebihan H⁺ atau OH⁻, dengan koreksi autoprotolisis air.
