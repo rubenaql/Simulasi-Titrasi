@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 st.set_page_config(
-    page_title="Simulator Titrasi Kelompok 3",
+    page_title="Simulator Titrasi - Belajar Kimia Interaktif",
     layout="wide",
     page_icon="",
     initial_sidebar_state="expanded",
@@ -66,7 +66,7 @@ st.markdown(
 )
 
 # =========================
-# FUNGSI KIMIA
+# FUNGSI KIMIA (sama seperti sebelumnya, tidak diubah)
 # =========================
 def hitung_kw(temp_c: float) -> float:
     return 10 ** (-14 + 0.031 * (temp_c - 25))
@@ -433,8 +433,8 @@ for key, default_val in defaults.items():
 # =========================
 # UI SIDEBAR
 # =========================
-st.title("Simulator Titrasi")
-st.markdown("Simulator Titrasi Oleh Kelompok 3 LPK.")
+st.title("Simulator Titrasi Interaktif")
+st.markdown("Belajar titrasi asam-basa, kompleksometri, dan permanganometri dengan mudah.")
 
 with st.sidebar:
     st.header("Pengaturan Percobaan")
@@ -458,7 +458,7 @@ with st.sidebar:
         """)
     st.markdown("---")
     
-    # Menu pemilihan jenis titrasi (yang sebelumnya hilang, sekarang dikembalikan)
+    # Menu pemilihan jenis titrasi
     st.subheader("Jenis Titrasi")
     st.selectbox(
         "Pilih jenis titrasi",
@@ -749,6 +749,22 @@ with st.expander("Penjelasan Lengkap untuk Pemula", expanded=False):
     - Ganti indikator untuk melihat perubahan warna yang sesuai.
     - Jika kurva tidak menunjukkan lonjakan, naikkan volume maksimum buret.
     
+    Selamat belajar!
     """)
 
-st.caption("Courtesy Of Kelompok 3 LPK.")
+# =========================
+# IDENTITAS KELOMPOK 3
+# =========================
+st.markdown("---")
+st.subheader("Dibuat oleh Kelompok 3 LPK")
+st.markdown("""
+| Nama | NPM |
+|------|-----|
+| Arsyidah Fitriani | 2560583 |
+| Felinda Isnantika Putri | 2560632 |
+| Naysilla Zyanca Putri | 2560721 |
+| Nuh Habil Alim Ma'ruf | 2560730 |
+| Ruben Aqilla Harjanto | 2560764 |
+""")
+
+st.caption("Simulator Titrasi Interaktif - Didesain untuk pembelajaran kimia yang mudah dipahami.")
