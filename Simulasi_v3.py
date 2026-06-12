@@ -18,7 +18,6 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    /* Box status yang adaptif terhadap tema */
     .status-box {
         background-color: rgba(128, 128, 128, 0.15);
         border-radius: 0.5rem;
@@ -40,10 +39,17 @@ st.markdown(
         color: inherit;
         line-height: 1.3;
     }
-    /* Perbaikan untuk wadah larutan agar teks terbaca */
     .solution-info {
         background-color: rgba(0, 0, 0, 0.65) !important;
         color: white !important;
+    }
+    .recommendation-box {
+        background-color: rgba(0, 128, 0, 0.1);
+        border-left: 4px solid #00cc00;
+        padding: 8px 12px;
+        margin-top: 10px;
+        border-radius: 5px;
+        font-size: 13px;
     }
     </style>
     """,
@@ -307,6 +313,21 @@ def get_permanganometri_color(E, status):
         return "#FFDDDD"      # merah muda pucat
 
 # =========================
+# REKOMENDASI INDIKATOR
+# =========================
+def get_indicator_recommendation(jenis_titrasi):
+    recommendations = {
+        "HCl_NaOH": "**Rekomendasi:** Bromothymol Blue (6.0-7.6) atau Phenolphthalein (8.2-10). Titik ekuivalen pH 7.",
+        "NaOH_HCl": "**Rekomendasi:** Bromothymol Blue (6.0-7.6) atau Phenolphthalein (8.2-10). Titik ekuivalen pH 7.",
+        "CH3COOH_NaOH": "**Rekomendasi:** Phenolphthalein (8.2-10). Titik ekuivalen pH > 7 (basa).",
+        "NaOH_AsamOksalat": "**Rekomendasi:** Phenolphthalein (8.2-10). Titik ekuivalen kedua sekitar pH 8-9.",
+        "HCl_Boraks": "**Rekomendasi:** Methyl Orange (3.1-4.4) atau Methyl Red. Titik ekuivalen pH sekitar 5.",
+        "Kompleksometri_EDTA_Ca": "**Indikator khusus:** Eriochrome Black T (EBT). Perubahan warna: merah anggur → biru.",
+        "Permanganometri_Fe": "**Autoindikator:** KMnO4 itu sendiri (ungu). Tidak perlu indikator tambahan."
+    }
+    return recommendations.get(jenis_titrasi, "")
+
+# =========================
 # STRUKTUR PARAMETER
 # =========================
 @dataclass
@@ -444,6 +465,7 @@ with st.sidebar:
     else:
         E0_Fe, E0_Mn = 0.77, 1.51
 
+    # Indikator dan rekomendasi
     if jenis_titrasi in ["HCl_NaOH", "NaOH_HCl", "CH3COOH_NaOH", "NaOH_AsamOksalat", "HCl_Boraks"]:
         st.subheader("Indikator pH")
         indicator = st.selectbox(
@@ -456,8 +478,14 @@ with st.sidebar:
             }.get(x, x),
             key="indicator_select"
         )
+        # Tampilkan rekomendasi indikator
+        rec = get_indicator_recommendation(jenis_titrasi)
+        st.markdown(f'<div class="recommendation-box">{rec}</div>', unsafe_allow_html=True)
     else:
         indicator = None
+        # Untuk titrasi non-pH, tetap tampilkan rekomendasi indikator/autoindikator
+        rec = get_indicator_recommendation(jenis_titrasi)
+        st.markdown(f'<div class="recommendation-box">{rec}</div>', unsafe_allow_html=True)
 
 # =========================
 # PERHITUNGAN UTAMA
@@ -517,7 +545,6 @@ with left:
         st.metric("Volume Ekuivalen", f"{Ve:.2f} mL")
     with col2:
         st.metric("Volume Ditambahkan", f"{v_add_ml:.1f} mL")
-        # Menggunakan box status yang adaptif terhadap tema
         st.markdown(f"""
             <div class="status-box">
                 <p>Status</p>
