@@ -468,14 +468,12 @@ st.table(ringkasan)
 # =========================
 st.divider()
 with st.expander("📖 Panduan Penggunaan & Instalasi", expanded=False):
-    st.markdown("""
-    ## Panduan Lengkap Simulator Titrasi
+    st.markdown('''
+        ## Panduan Lengkap Simulator Titrasi
 
-    ### 1. Persyaratan Sistem
-    - Python 3.8 atau lebih baru
-    - Pip (manajer paket Python)
+        ### 1. Persyaratan Sistem
+        - Python 3.8 atau lebih baru
+        - Pip (manajer paket Python)
 
-    ### 2. Instalasi
-    Buka terminal/command prompt, lalu jalankan:
-    ```bash
-    pip install streamlit numpy pandas plotly
+        ### 2. Instalasi
+        Buka terminal/command prompt, lalu jalankan:
