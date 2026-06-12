@@ -13,6 +13,44 @@ st.set_page_config(
 )
 
 # =========================
+# CSS KUSTOM UNTUK DARK MODE
+# =========================
+st.markdown(
+    """
+    <style>
+    /* Box status yang adaptif terhadap tema */
+    .status-box {
+        background-color: rgba(128, 128, 128, 0.15);
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+        margin: 0.5rem 0;
+    }
+    .status-box p:first-child {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        color: inherit;
+    }
+    .status-box p:last-child {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 500;
+        word-break: break-word;
+        white-space: normal;
+        color: inherit;
+        line-height: 1.3;
+    }
+    /* Perbaikan untuk wadah larutan agar teks terbaca */
+    .solution-info {
+        background-color: rgba(0, 0, 0, 0.65) !important;
+        color: white !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# =========================
 # FUNGSI KIMIA UMUM
 # =========================
 def hitung_kw(temp_c: float) -> float:
@@ -406,7 +444,6 @@ with st.sidebar:
     else:
         E0_Fe, E0_Mn = 0.77, 1.51
 
-    # Indikator (hanya untuk titrasi asam-basa)
     if jenis_titrasi in ["HCl_NaOH", "NaOH_HCl", "CH3COOH_NaOH", "NaOH_AsamOksalat", "HCl_Boraks"]:
         st.subheader("Indikator pH")
         indicator = st.selectbox(
@@ -464,9 +501,9 @@ with left:
         f"""
         <div style="width:220px; height:340px; border:2px solid #cccccc; border-radius:10px; margin:auto; 
                     background:{solution_color}; position:relative; overflow:hidden; box-shadow:0 4px 8px rgba(0,0,0,0.1);">
-            <div style="position:absolute; bottom:10px; left:0; right:0; text-align:center; 
-                        background:rgba(255,255,255,0.7); padding:8px; font-size:11px; font-weight:bold;
-                        word-wrap:break-word; white-space:normal; max-height:90px; overflow-y:auto;">
+            <div class="solution-info" style="position:absolute; bottom:10px; left:0; right:0; text-align:center; 
+                        background:rgba(0,0,0,0.65); padding:8px; font-size:11px; font-weight:bold;
+                        word-wrap:break-word; white-space:normal; max-height:90px; overflow-y:auto; color:white;">
                 {satuan.upper()}: {nilai:.3f}{info_indicator}<br>
                 {status}
             </div>
@@ -480,13 +517,11 @@ with left:
         st.metric("Volume Ekuivalen", f"{Ve:.2f} mL")
     with col2:
         st.metric("Volume Ditambahkan", f"{v_add_ml:.1f} mL")
-        # Perbaikan: menggunakan markdown agar status bisa membungkus teks panjang
+        # Menggunakan box status yang adaptif terhadap tema
         st.markdown(f"""
-            <div style="background-color:#f0f2f6; border-radius:0.5rem; padding:0.5rem;">
-                <p style="margin:0; font-size:14px; font-weight:600; color:#31333F;">Status</p>
-                <p style="margin:0; font-size:24px; font-weight:400; word-break:break-word; white-space:normal;">
-                    {status}
-                </p>
+            <div class="status-box">
+                <p>Status</p>
+                <p>{status}</p>
             </div>
         """, unsafe_allow_html=True)
 
