@@ -251,10 +251,10 @@ def get_indicator_color(pH, indicator):
 # =========================
 def get_kompleksometri_color(pCa, status):
     if status == "Kelebihan Ca2+":
-        return "#8B0000"      # merah anggur (kompleks Ca-EBT)
+        return "#8B0000"      # merah anggur
     elif status == "Titik ekuivalen":
-        return "#0000CD"      # biru medium (EBT bebas)
-    else:                     # Kelebihan EDTA
+        return "#0000CD"      # biru medium
+    else:
         return "#0000FF"      # biru terang
 
 # =========================
@@ -264,9 +264,9 @@ def get_permanganometri_color(E, status):
     if status == "Kelebihan KMnO4":
         return "#CC00CC"      # ungu
     elif status == "Kelebihan Fe2+":
-        return "#FFFFCC"      # kuning pucat (Fe3+)
-    else:                     # Titik ekuivalen
-        return "#FFDDDD"      # merah muda sangat pucat
+        return "#FFFFCC"      # kuning pucat
+    else:
+        return "#FFDDDD"      # merah muda pucat
 
 # =========================
 # STRUKTUR PARAMETER
@@ -442,7 +442,7 @@ params = Parameter(
 nilai, status, satuan = hitung_nilai(params)
 Ve = (c0 * (v0_ml / 1000) / c_add) * 1000 if c_add > 0 else 0
 
-# Tentukan warna larutan berdasarkan jenis titrasi dan status
+# Tentukan warna larutan
 if jenis_titrasi in ["HCl_NaOH", "NaOH_HCl", "CH3COOH_NaOH", "NaOH_AsamOksalat", "HCl_Boraks"] and indicator is not None:
     solution_color = get_indicator_color(nilai, indicator)
     info_indicator = f" | {indicator}"
@@ -456,7 +456,7 @@ else:
     solution_color = "#f0f0f0"
     info_indicator = ""
 
-# Layout utama - dengan perbaikan tampilan teks status
+# Layout utama
 left, right = st.columns([1, 2])
 with left:
     st.subheader("Larutan")
@@ -479,8 +479,16 @@ with left:
         st.metric(satuan.upper(), f"{nilai:.3f} " + ("V" if satuan == "E (V)" else ""))
         st.metric("Volume Ekuivalen", f"{Ve:.2f} mL")
     with col2:
-        st.metric("Status", status)
         st.metric("Volume Ditambahkan", f"{v_add_ml:.1f} mL")
+        # Perbaikan: menggunakan markdown agar status bisa membungkus teks panjang
+        st.markdown(f"""
+            <div style="background-color:#f0f2f6; border-radius:0.5rem; padding:0.5rem;">
+                <p style="margin:0; font-size:14px; font-weight:600; color:#31333F;">Status</p>
+                <p style="margin:0; font-size:24px; font-weight:400; word-break:break-word; white-space:normal;">
+                    {status}
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
 
 # Kurva titrasi
 vs = np.linspace(0, v_max, 250)
