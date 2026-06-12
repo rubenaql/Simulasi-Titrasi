@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 st.set_page_config(
-    page_title="Simulator Titrasi - Belajar Kimia Interaktif",
+    page_title="Simulator Titrasi",
     layout="wide",
     page_icon="",
     initial_sidebar_state="expanded",
@@ -434,7 +434,7 @@ for key, default_val in defaults.items():
 # UI SIDEBAR
 # =========================
 st.title("Simulator Titrasi Interaktif")
-st.markdown("Belajar titrasi asam-basa, kompleksometri, dan permanganometri dengan mudah.")
+st.markdown("")
 
 with st.sidebar:
     st.header("Pengaturan Percobaan")
@@ -749,7 +749,6 @@ with st.expander("Penjelasan Lengkap untuk Pemula", expanded=False):
     - Ganti indikator untuk melihat perubahan warna yang sesuai.
     - Jika kurva tidak menunjukkan lonjakan, naikkan volume maksimum buret.
     
-    Selamat belajar!
     """)
 
 # =========================
@@ -758,7 +757,7 @@ with st.expander("Penjelasan Lengkap untuk Pemula", expanded=False):
 st.markdown("---")
 st.subheader("Dibuat oleh Kelompok 3 LPK")
 st.markdown("""
-| Nama | NPM |
+| Nama | NIM |
 |------|-----|
 | Arsyidah Fitriani | 2560583 |
 | Felinda Isnantika Putri | 2560632 |
@@ -767,4 +766,4 @@ st.markdown("""
 | Ruben Aqilla Harjanto | 2560764 |
 """)
 
-st.caption("Simulator Titrasi Interaktif - Didesain untuk pembelajaran kimia yang mudah dipahami.")
+st.caption("Dibuat Dengan Streamlit, Plotly, Pandas.")
