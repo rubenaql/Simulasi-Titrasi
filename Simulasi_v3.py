@@ -385,7 +385,7 @@ with left:
     with col2:
         st.metric("Status", status)
         st.metric("Volume Ditambahkan", f"{v_add_ml:.1f} mL")
-        st.metric("Kw", f"{Kw:.2e}")
+        st.metric("Kw", f"{Kw:.14f}")   # ditampilkan sebagai desimal penuh, bukan notasi ilmiah
     
     with st.expander("Trayek Indikator"):
         if indicator == "Phenolphthalein":
@@ -502,7 +502,7 @@ st.divider()
 st.subheader("Ringkasan")
 ringkasan = pd.DataFrame({
     "Parameter": ["pH", "Status", "Volume Ekuivalen (mL)", "Indikator", "Suhu (C)", "Kw"],
-    "Nilai": [round(pH,2), status, f"{Ve:.2f}", rec_ind, f"{temp_c:.1f}", f"{Kw:.2e}"]
+    "Nilai": [round(pH,2), status, f"{Ve:.2f}", rec_ind, f"{temp_c:.1f}", f"{Kw:.14f}"]  # Kw ditampilkan tanpa notasi e
 })
 st.table(ringkasan)
 
