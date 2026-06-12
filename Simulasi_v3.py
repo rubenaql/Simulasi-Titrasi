@@ -256,6 +256,38 @@ def get_indicator_color(pH, indicator):
 st.title("Simulator Titrasi Interaktif")
 st.markdown("Simulasi titrasi asam-basa dengan kurva pH dan perubahan warna indikator.")
 
+# =========================
+# PANDUAN PENGGUNAAN (baru ditambahkan)
+# =========================
+with st.expander("📖 Cara Menggunakan Program", expanded=False):
+    st.markdown("""
+    ### Langkah-Langkah Menggunakan Simulator:
+    1. **Pilih Jenis Titrasi** di bilah kiri (*sidebar*):
+        - `Asam Kuat + Basa Kuat` (HCl + NaOH)
+        - `Basa Kuat + Asam Kuat` (NaOH + HCl)
+        - `Asam Lemah + Basa Kuat` (CH₃COOH + NaOH)
+    2. **Atur Konsentrasi & Volume Analit** (larutan yang akan dititrasi).
+    3. **Atur Konsentrasi Titran** (larutan penitrasi) dan **Volume Maksimum** yang akan ditampilkan pada kurva.
+    4. **Pilih Indikator pH** untuk melihat perubahan warna sesuai trayek indikator tersebut.
+    5. **Geser Slider "Volume Ditambahkan"** untuk melihat:
+        - Perubahan pH secara real-time
+        - Warna larutan di wadah simulasi (kiri)
+        - Posisi titik pada kurva titrasi (kanan)
+        - Status (daerah buffer, kelebihan asam/basa, atau titik ekuivalen)
+    6. **Tombol "Mulai Simulasi Otomatis"** akan menjalankan titrasi dari volume 0 hingga maksimum secara otomatis.
+    7. **Lihat Tabel & Unduh CSV** untuk data kurva titrasi yang lengkap.
+    
+    ### Fitur Lain:
+    - **Informasi Cepat** di sidebar menampilkan volume ekuivalen teoritis.
+    - **Rekomendasi Indikator** otomatis muncul sesuai jenis titrasi.
+    - **Langkah Perhitungan** detail dapat dilihat di bagian bawah halaman.
+    - **Ekspor Data** kurva dalam format CSV.
+    
+    ### Tips:
+    - Gunakan suhu 25°C untuk nilai Kw standar. Suhu lain akan menggeser pH netral.
+    - Indikator yang tepat akan menunjukkan perubahan warna di sekitar titik ekuivalen.
+    """)
+
 with st.sidebar:
     st.header("Pengaturan Titrasi")
     type_ = st.selectbox(
