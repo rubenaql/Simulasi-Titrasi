@@ -219,7 +219,7 @@ with st.sidebar:
     st.markdown("---")
     st.subheader("Larutan Analit")
     c0 = st.number_input(
-        "Konsentrasi (M)", min_value=0.0, value=0.1, step=0.01, format="%.4f", key="c0"
+        "Konsentrasi (N)", min_value=0.0, value=0.1, step=0.01, format="%.4f", key="c0"
     )
     v0_ml = st.number_input(
         "Volume (mL)", min_value=1.0, value=50.0, step=5.0, format="%.1f", key="v0_ml"
@@ -227,11 +227,11 @@ with st.sidebar:
 
     st.subheader("Larutan Titran")
     c_add = st.number_input(
-        "Konsentrasi (M)", min_value=0.0, value=0.1, step=0.01, format="%.4f", key="c_add"
+        "Konsentrasi (N)", min_value=0.0, value=0.1, step=0.01, format="%.4f", key="c_add"
     )
     # Volume Maksimum: input manual (number_input)
     v_max = st.number_input(
-        "Volume Maksimum (mL)", min_value=10, max_value=500, value=100, step=10, key="v_max"
+        "Volume Buret (mL)", min_value=10, max_value=500, value=100, step=10, key="v_max"
     )
 
     st.subheader("Parameter Tambahan")
