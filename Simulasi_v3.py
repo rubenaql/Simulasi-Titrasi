@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 st.set_page_config(
-    page_title="Simulator Titrasi - Belajar Kimia Interaktif",
+    page_title="Simulator Titrasi Kelompok 3",
     layout="wide",
     page_icon="",
     initial_sidebar_state="expanded",
@@ -433,8 +433,8 @@ for key, default_val in defaults.items():
 # =========================
 # UI SIDEBAR
 # =========================
-st.title("Simulator Titrasi Interaktif")
-st.markdown("Belajar titrasi asam-basa, kompleksometri, dan permanganometri dengan mudah.")
+st.title("Simulator Titrasi")
+st.markdown("Simulator Titrasi Oleh Kelompok 3 LPK.")
 
 with st.sidebar:
     st.header("Pengaturan Percobaan")
@@ -749,7 +749,6 @@ with st.expander("Penjelasan Lengkap untuk Pemula", expanded=False):
     - Ganti indikator untuk melihat perubahan warna yang sesuai.
     - Jika kurva tidak menunjukkan lonjakan, naikkan volume maksimum buret.
     
-    Selamat belajar!
     """)
 
-st.caption("Simulator Titrasi Interaktif - Didesain untuk pembelajaran kimia yang mudah dipahami.")
+st.caption("Courtesy Of Kelompok 3 LPK.")
